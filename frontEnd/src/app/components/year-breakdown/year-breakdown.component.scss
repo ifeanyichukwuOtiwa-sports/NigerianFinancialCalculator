@@ -1,0 +1,52 @@
+.breakdown-card {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  animation: slideIn 0.3s ease-out;
+
+  .breakdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      &:hover { color: var(--text-main); }
+    }
+  }
+
+  .breakdown-grid {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      color: var(--text-muted);
+
+      &.total {
+        margin-left: auto;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+    }
+  }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

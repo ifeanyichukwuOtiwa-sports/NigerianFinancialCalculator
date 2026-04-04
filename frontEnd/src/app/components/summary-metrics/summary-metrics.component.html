@@ -1,0 +1,14 @@
+<div class="metrics">
+  <div class="metric glass-card">
+    <span class="label">Total Invested</span>
+    <span class="value">{{ totalInvested() | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+  </div>
+  <div class="metric glass-card">
+    <span class="label">Total Interest</span>
+    <span class="value green">{{ interestEarned() | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+  </div>
+  <div class="metric glass-card">
+    <span class="label">Final Balance</span>
+    <span class="value">{{ balance() | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+  </div>
+</div>

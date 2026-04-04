@@ -1,0 +1,13 @@
+@if (milestones().length > 0) {
+  <div class="milestones-wrap">
+    <h4>Milestones</h4>
+    <div class="milestones-list">
+      @for (m of milestones(); track m.label) {
+        <div class="milestone-pill" (click)="selectYear.emit(m.year)">
+          <span class="m-label">{{ m.label }}</span>
+          <span class="m-year">Year {{ m.year }}</span>
+        </div>
+      }
+    </div>
+  </div>
+}

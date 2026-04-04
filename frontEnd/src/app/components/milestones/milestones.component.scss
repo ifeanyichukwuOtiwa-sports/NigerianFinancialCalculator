@@ -1,0 +1,41 @@
+.milestones-wrap {
+  margin-bottom: 2rem;
+  h4 {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.milestones-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+
+  &::-webkit-scrollbar { height: 4px; }
+  &::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .milestone-pill {
+    flex: 0 0 auto;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+
+    &:hover {
+      background: var(--surface-hover);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .m-label { font-size: 13px; font-weight: 600; color: var(--primary); }
+    .m-year { font-size: 13px; color: var(--text-muted); }
+  }
+}

@@ -1,0 +1,21 @@
+@if (data()) {
+  <div class="breakdown-card glass-card">
+    <div class="breakdown-header">
+      <h3>Year {{ data().year }} Breakdown</h3>
+      <button (click)="close.emit()">✕</button>
+    </div>
+    <div class="breakdown-grid">
+      <div class="item">
+        <span class="dot blue"></span>
+        <span>Invested: {{ data().totalInvested | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+      </div>
+      <div class="item">
+        <span class="dot green"></span>
+        <span>Interest: {{ data().totalInterest | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+      </div>
+      <div class="item total">
+        <span>Final Balance: {{ data().totalBalance | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+      </div>
+    </div>
+  </div>
+}

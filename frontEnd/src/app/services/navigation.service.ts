@@ -1,0 +1,1 @@
+import { Injectable, signal } from '@angular/core'; @Injectable({ providedIn: 'root' }) export class NavigationService { readonly activeTab = signal<'investment' | 'tax'>('investment'); setActiveTab(tab: 'investment' | 'tax'): void { this.activeTab.set(tab); } }

@@ -1,0 +1,35 @@
+<app-navbar />
+
+<main>
+  @if (activeTab() === 'investment') {
+    <app-investment-form
+      [(principal)]="principal"
+      [(rate)]="rate"
+      [(years)]="years"
+      [(monthly)]="monthly"
+      [(frequency)]="frequency" />
+
+    <app-summary-metrics
+      [totalInvested]="totalInvested()"
+      [interestEarned]="interestEarned()"
+      [balance]="balance()" />
+
+    @if (selectedYearData()) {
+      <app-year-breakdown
+        [data]="selectedYearData()!"
+        (close)="selectedYear.set(null)" />
+    }
+
+    <app-milestones
+      [milestones]="milestones()"
+      (selectYear)="selectedYear.set($event)" />
+
+    <app-investment-chart
+      [labels]="chartLabels()"
+      [investedData]="investedData()"
+      [interestData]="interestData()"
+      (yearSelected)="selectedYear.set($event)" />
+  } @else {
+    <app-tax-calculator [(annualIncome)]="annualIncome" />
+  }
+</main>

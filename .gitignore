@@ -1,20 +1,54 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
-
-# Node
-/node_modules
+# --- Angular / Frontend ---
+/frontEnd/dist
+/frontEnd/tmp
+/frontEnd/out-tsc
+/frontEnd/bazel-out
+/frontEnd/.angular/cache
+node_modules/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# IDEs and editors
+# --- Java Spring Boot / Backend ---
+target/
+build/
+.gradle/
+bin/
+/out/
+*.class
+*.jar
+*.war
+*.ear
+*.bundle
+*.swp
+*.bak
+*.tmp
+*.temp
+
+# Spring Boot related
+.help.md
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Liquibase
+/liquibase.log
+/liquibase-debug.log
+
+# --- IDEs and editors ---
 .idea/
 .project
 .classpath
@@ -24,16 +58,15 @@ lerna-debug.log*
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/mcp.json
-.history/*
+.history/
 
-# Miscellaneous
-/.angular/cache
+# --- Miscellaneous ---
 .sass-cache/
 /connect.lock
 /coverage
@@ -42,7 +75,7 @@ testem.log
 /typings
 __screenshots__/
 
-# System files
+# --- System files ---
 .DS_Store
 Thumbs.db
 .env*

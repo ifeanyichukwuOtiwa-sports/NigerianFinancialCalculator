@@ -1,0 +1,18 @@
+<nav>
+  <div class="nav-container">
+    <div class="nav-brand">
+      <h1>{{ title() }}</h1>
+    </div>
+
+    <div class="tabs toggle-group">
+      <button [class.active]="activeTab() === 'investment'" (click)="activeTab.set('investment')">Compound Interest</button>
+      <button [class.active]="activeTab() === 'tax'" (click)="activeTab.set('tax')">Tax Calculator</button>
+    </div>
+
+    <div class="theme-controls toggle-group">
+      <button [class.active]="theme() === 'light'" (click)="setTheme('light')" aria-label="Day Mode">☀️ Day</button>
+      <button [class.active]="theme() === 'dark'" (click)="setTheme('dark')" aria-label="Night Mode">🌙 Night</button>
+      <button [class.active]="theme() === 'system'" (click)="setTheme('system')" aria-label="System Mode">🖥️ System</button>
+    </div>
+  </div>
+</nav>
