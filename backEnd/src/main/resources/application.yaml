@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: backEnd
+  
+  datasource:
+    url: jdbc:mysql://localhost:6033/ngn_calc?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+  session:
+    store-type: redis # Requirement mentioned Redis in build.gradle
+    redis:
+      namespace: spring:session:ngn_calc
+
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: false # Set to true in production with HTTPS
+cors:
+  config:
+    allowed-origins:
+      - "http://localhost:4200"
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    allowed-headers:
+      - authorization
+      - content-type
+      - x-auth-token
+      - x-app-brand
+    exposed-headers:
+      - x-auth-token
+    allow-credentials: true

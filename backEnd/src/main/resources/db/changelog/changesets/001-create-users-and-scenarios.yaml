@@ -1,0 +1,67 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260404-001
+      author: ifeanyichukwu.otiwa
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE users (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                brand VARCHAR(10) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                full_name VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (brand, email)
+              );
+
+  - changeSet:
+      id: 20260404-002
+      author: ifeanyichukwu.otiwa
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE investment_scenarios (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                brand VARCHAR(10) NOT NULL,
+                user_id BIGINT NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                principal DECIMAL(19,4) NOT NULL,
+                annual_rate DECIMAL(19,4) NOT NULL,
+                years INT NOT NULL,
+                monthly_contribution DECIMAL(19,4) NOT NULL,
+                compounding_frequency VARCHAR(20) NOT NULL,
+                tax_strategy VARCHAR(20) NOT NULL,
+                annual_income DECIMAL(19,4),
+                total_balance DECIMAL(19,4),
+                total_interest DECIMAL(19,4),
+                estimated_tax DECIMAL(19,4),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_scenario_user FOREIGN KEY (user_id) REFERENCES users(id)
+              );
+
+  - changeSet:
+      id: 20260404-003
+      author: ifeanyichukwu.otiwa
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE brand_configs (
+                brand VARCHAR(10) PRIMARY KEY,
+                config JSON NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+              );
+
+              -- Seed NGN Brand Config
+              INSERT INTO brand_configs (brand, config)
+              VALUES ('NGN', JSON_OBJECT(
+                'whtRate', 0.1000,
+                'taxBands', JSON_ARRAY(
+                  JSON_OBJECT('upperLimit', 800000.00, 'rate', 0.0000),
+                  JSON_OBJECT('upperLimit', 2200000.00, 'rate', 0.1500),
+                  JSON_OBJECT('upperLimit', 9000000.00, 'rate', 0.1800),
+                  JSON_OBJECT('upperLimit', 13000000.00, 'rate', 0.2100),
+                  JSON_OBJECT('upperLimit', 25000000.00, 'rate', 0.2300),
+                  JSON_OBJECT('upperLimit', NULL, 'rate', 0.2500)
+                )
+              ));
