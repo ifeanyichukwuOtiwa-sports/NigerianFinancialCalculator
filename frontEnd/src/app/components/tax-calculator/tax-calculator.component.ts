@@ -7,7 +7,6 @@ import { PITResult, IncomeFrequency } from '../../app.types';
 
 @Component({
   selector: 'app-tax-calculator',
-  standalone: true,
   imports: [FormsModule, CurrencyPipe, DecimalPipe, TitleCasePipe],
   templateUrl: './tax-calculator.component.html',
   styleUrl: './tax-calculator.component.scss'

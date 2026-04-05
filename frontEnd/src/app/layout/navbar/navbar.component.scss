@@ -10,7 +10,6 @@ nav {
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 
-  /* Top border gradient with theme intensity colors */
   &::before {
     content: '';
     position: absolute;
@@ -32,33 +31,29 @@ nav {
   gap: 1.5rem;
 }
 
-.nav-brand {
-  h1 {
-    font-size: 1.15rem;
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    margin: 0;
-    white-space: nowrap;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    cursor: default;
-  }
+.nav-brand h1 {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin: 0;
+  white-space: nowrap;
+  cursor: default;
 }
 
 .toggle-group {
-  /* Specific navbar overrides for global toggle-group */
   background: var(--bg-color);
   border: 1px solid var(--border);
   padding: 3px;
   gap: 2px;
 
-  button {
+  button, a {
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 700;
     white-space: nowrap;
     border-radius: calc(var(--radius-md) - 4px);
+    text-decoration: none;
+    color: inherit;
 
     &.active {
       box-shadow: 0 2px 8px var(--accent-border);
@@ -66,10 +61,26 @@ nav {
   }
 }
 
-.theme-controls {
-  button {
-    padding: 6px 10px;
-  }
+.theme-controls button {
+  padding: 6px 10px;
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-greeting {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 @media (max-width: 850px) {
@@ -82,7 +93,7 @@ nav {
     font-size: 1.1rem;
   }
 
-  .toggle-group button {
+  .toggle-group button, .toggle-group a {
     padding: 5px 10px;
     font-size: 12px;
   }
@@ -99,18 +110,9 @@ nav {
     gap: 1rem;
   }
 
-  .nav-brand {
-    order: 1;
-  }
-
-  .tabs {
-    order: 2;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .theme-controls {
-    order: 3;
-    width: auto;
-  }
+  .nav-brand { order: 1; }
+  .tabs { order: 2; width: 100%; justify-content: center; }
+  .user-controls { order: 3; }
+  .auth-buttons { order: 3; }
+  .theme-controls { order: 4; width: auto; }
 }

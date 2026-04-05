@@ -3,7 +3,6 @@ import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-summary-metrics',
-  standalone: true,
   imports: [CurrencyPipe],
   templateUrl: './summary-metrics.component.html',
   styleUrl: './summary-metrics.component.scss'

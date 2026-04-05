@@ -18,7 +18,6 @@ import { ThemeService } from '../../services/theme.service';
 
 @Component({
 	selector: 'app-investment-chart',
-	standalone: true,
 	imports: [],
 	templateUrl: './investment-chart.component.html',
 	styleUrl: './investment-chart.component.scss'

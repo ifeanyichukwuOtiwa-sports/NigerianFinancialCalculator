@@ -4,7 +4,6 @@ import { YearBreakdown } from '../../app.types';
 
 @Component({
   selector: 'app-year-breakdown',
-  standalone: true,
   imports: [CurrencyPipe],
   templateUrl: './year-breakdown.component.html',
   styleUrl: './year-breakdown.component.scss'

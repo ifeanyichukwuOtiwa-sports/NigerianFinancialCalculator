@@ -1,14 +1,24 @@
 <nav>
   <div class="nav-container">
     <div class="nav-brand">
-      <h1>{{ title() }}</h1>
+      <h1 class="gradient-text">{{ title }}</h1>
     </div>
-
-    <div class="tabs toggle-group">
-      <button [class.active]="activeTab() === 'investment'" (click)="activeTab.set('investment')">Compound Interest</button>
-      <button [class.active]="activeTab() === 'tax'" (click)="activeTab.set('tax')">Tax Calculator</button>
-    </div>
-
+    @if (isLoggedIn()) {
+      <div class="tabs toggle-group">
+        <a routerLink="/calculator" routerLinkActive="active">Compound Interest</a>
+        <a routerLink="/tax" routerLinkActive="active">Tax Calculator</a>
+        <a routerLink="/scenarios" routerLinkActive="active">My Scenarios</a>
+      </div>
+      <div class="user-controls">
+        <span class="user-greeting">{{ user()?.fullName }}</span>
+        <button class="btn-danger" (click)="logout()">Logout</button>
+      </div>
+    } @else {
+      <div class="auth-buttons">
+        <button class="btn-secondary" (click)="openAuth('login')">Login</button>
+        <button class="btn-primary" (click)="openAuth('register')">Register</button>
+      </div>
+    }
     <div class="theme-controls toggle-group">
       <button [class.active]="theme() === 'light'" (click)="setTheme('light')" aria-label="Day Mode">☀️ Day</button>
       <button [class.active]="theme() === 'dark'" (click)="setTheme('dark')" aria-label="Night Mode">🌙 Night</button>

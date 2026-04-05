@@ -8,7 +8,8 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Day Theme (Default) */
-  --bg-color: #ffffff;
+  --bg-color: #f1f5f9;
+  --bg-image: url('/assets/bg-light.svg');
   --text-main: #000000;
   --text-muted: #475569;
   --surface: #f8fafc;
@@ -18,13 +19,15 @@
   --secondary: #2563eb;
   --accent-bg: rgba(5, 150, 105, 0.05);
   --accent-border: rgba(5, 150, 105, 0.1);
+  --danger: #ef4444;
   --chart-grid: rgba(0, 0, 0, 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     /* Night Theme Defaults - Refined Slate Palette */
-    --bg-color: #0f172a;
+    --bg-color: #1a1a18;
+    --bg-image: url('/assets/bg-dark.svg');
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --surface: #1e293b;
@@ -34,13 +37,15 @@
     --secondary: #60a5fa;
     --accent-bg: rgba(52, 211, 153, 0.1);
     --accent-border: rgba(52, 211, 153, 0.2);
+    --danger: #f87171;
     --chart-grid: rgba(255, 255, 255, 0.05);
   }
 }
 
 /* Manual Theme Overrides */
 [data-theme='light'] {
-  --bg-color: #ffffff;
+  --bg-color: #f1f5f9;
+  --bg-image: url('/assets/bg-light.svg');
   --text-main: #000000;
   --text-muted: #475569;
   --surface: #f8fafc;
@@ -50,11 +55,13 @@
   --secondary: #2563eb;
   --accent-bg: rgba(5, 150, 105, 0.05);
   --accent-border: rgba(5, 150, 105, 0.1);
+  --danger: #ef4444;
   --chart-grid: rgba(0, 0, 0, 0.05);
 }
 
 [data-theme='dark'] {
   --bg-color: #0f172a;
+  --bg-image: url('/assets/bg-dark.svg');
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --surface: #1e293b;
@@ -64,6 +71,7 @@
   --secondary: #60a5fa;
   --accent-bg: rgba(52, 211, 153, 0.1);
   --accent-border: rgba(52, 211, 153, 0.2);
+  --danger: #f87171;
   --chart-grid: rgba(255, 255, 255, 0.05);
 }
 
@@ -119,8 +127,14 @@
 body {
   font-family: var(--font-main);
   background-color: var(--bg-color);
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-main);
   line-height: 1.5;
+  min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -253,7 +267,7 @@ main {
     font-weight: 600;
     color: var(--text-main);
     &.green { color: var(--primary); }
-    &.red { color: #ef4444; }
+    &.red { color: var(--danger); }
   }
 
   .sub-value {
@@ -273,7 +287,7 @@ main {
   padding: 4px;
   border-radius: var(--radius-md);
 
-  button {
+  button, a {
     flex: 1;
     padding: 8px 12px;
     border: none;
@@ -284,6 +298,7 @@ main {
     cursor: pointer;
     border-radius: calc(var(--radius-md) - 2px);
     transition: var(--transition);
+    text-decoration: none;
 
     &:hover {
       background: var(--surface-hover);
@@ -320,6 +335,186 @@ main {
 
   &.blue { background: var(--secondary); }
   &.green { background: var(--primary); }
-  &.red { background: #ef4444; }
+  &.red { background: var(--danger); }
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: calc(var(--radius-md) - 4px);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  @extend .btn;
+  background: var(--primary);
+  color: #ffffff;
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px var(--accent-border);
+  }
+}
+
+.btn-secondary {
+  @extend .btn;
+  background: var(--surface);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+}
+
+.btn-danger {
+  @extend .btn;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+  }
+}
+
+.btn-lg {
+  padding: 12px 28px;
+  font-size: 15px;
+}
+
+.btn-full { width: 100%; }
+
+/* ── Text Input ── */
+.text-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-color);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius-md) - 4px);
+  color: var(--text-main);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  &::placeholder { color: var(--text-muted); }
+  &:focus { border-color: var(--primary); }
+}
+
+/* ── Form Field ── */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  input {
+    @extend .text-input;
+  }
+}
+
+/* ── Field Validation ── */
+.field-error {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--danger);
+  margin-top: -0.25rem;
+}
+
+.input-invalid {
+  border-color: var(--danger) !important;
+}
+
+/* ── Messages ── */
+.message-success {
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--radius-md) - 4px);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--primary);
+  border: 1px solid var(--accent-border);
+}
+
+.message-error {
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--radius-md) - 4px);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ── Gradient Text ── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Modal Overlay ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Close Button ── */
+.btn-icon-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem;
+  &:hover { color: var(--text-main); }
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* ── Save Scenario (dashed trigger) ── */
+.btn-dashed {
+  @extend .btn;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  color: var(--text-main);
+  font-weight: 600;
+  &:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
 }
 

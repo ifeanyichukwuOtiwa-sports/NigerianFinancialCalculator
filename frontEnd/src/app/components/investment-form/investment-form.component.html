@@ -12,7 +12,6 @@
     <input id="principal" type="range" min="100" [max]="maxPrincipal" step="100" [ngModel]="principal()"
            (ngModelChange)="principal.set(+$event)" />
   </div>
-
   <div class="ctrl">
     <div class="ctrl-header">
       <label for="rate">Annual rate (%)</label>
@@ -26,7 +25,6 @@
     <input id="rate" type="range" min="1" max="20" step="0.1" [ngModel]="rate()"
            (ngModelChange)="rate.set(+$event)" />
   </div>
-
   <div class="ctrl">
     <div class="ctrl-header">
       <label for="years">Years</label>
@@ -40,7 +38,6 @@
     <input id="years" type="range" min="1" max="50" step="1" [ngModel]="years()"
            (ngModelChange)="years.set(+$event)" />
   </div>
-
   <div class="ctrl">
     <div class="ctrl-header">
       <label for="monthly">{{ activeFrequencyLabel() }} Contribution</label>
@@ -54,7 +51,6 @@
     <input id="monthly" type="range" min="0" max="10000" step="1" [ngModel]="monthly()"
            (ngModelChange)="monthly.set(+$event)" />
   </div>
-
   <div class="ctrl full-width">
     <label>Compounding Frequency</label>
     <div class="frequency-toggle toggle-group glass-card">
@@ -66,5 +62,35 @@
       }
     </div>
   </div>
-
+  <div class="ctrl full-width save-section">
+    @if (saveMessage()) {
+      <div class="message-success save-msg" role="status">{{ saveMessage() }}</div>
+    }
+    @if (showSaveForm()) {
+      <div class="save-form">
+        <label for="scenario-name">Scenario Name</label>
+        <div class="save-form-row">
+          <input
+            id="scenario-name"
+            class="text-input"
+            type="text"
+            placeholder="e.g. Retirement Plan"
+            [ngModel]="scenarioName()"
+            (ngModelChange)="scenarioName.set($event)" />
+          <button class="btn-primary" (click)="onSave()" [disabled]="saving() || !scenarioName().trim()">
+            @if (saving()) {
+              Saving…
+            } @else {
+              Save
+            }
+          </button>
+          <button class="btn-secondary" (click)="toggleSaveForm()" type="button">Cancel</button>
+        </div>
+      </div>
+    } @else {
+      <button class="btn-dashed" (click)="toggleSaveForm()" type="button">
+        💾 Save Scenario
+      </button>
+    }
+  </div>
 </div>

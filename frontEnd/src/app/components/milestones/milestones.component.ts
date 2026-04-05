@@ -3,7 +3,6 @@ import { Milestone } from '../../app.types';
 
 @Component({
   selector: 'app-milestones',
-  standalone: true,
   imports: [],
   templateUrl: './milestones.component.html',
   styleUrl: './milestones.component.scss'

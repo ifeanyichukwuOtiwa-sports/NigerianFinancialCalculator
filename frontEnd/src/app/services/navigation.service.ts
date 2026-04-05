@@ -1,1 +1,16 @@
-import { Injectable, signal } from '@angular/core'; @Injectable({ providedIn: 'root' }) export class NavigationService { readonly activeTab = signal<'investment' | 'tax'>('investment'); setActiveTab(tab: 'investment' | 'tax'): void { this.activeTab.set(tab); } }
+import { Injectable, signal } from '@angular/core';
+
+export type AuthModal = 'login' | 'register' | null;
+
+@Injectable({ providedIn: 'root' })
+export class NavigationService {
+	readonly authModal = signal<AuthModal>(null);
+
+	openAuth(mode: 'login' | 'register'): void {
+		this.authModal.set(mode);
+	}
+
+	closeAuth(): void {
+		this.authModal.set(null);
+	}
+}
