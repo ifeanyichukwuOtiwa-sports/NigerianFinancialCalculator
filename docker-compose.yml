@@ -1,0 +1,73 @@
+services:
+  # ── MySQL Database ──
+  mysql:
+    image: mysql:8.4.8-oracle
+    container_name: ngn-calc-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_DATABASE: ngn_calc
+    ports:
+      - "6033:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h localhost -uroot -p'${MYSQL_ROOT_PASSWORD:-123456}' -e 'SELECT 1;' $$MYSQL_DATABASE"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Redis Session Store ──
+  redis:
+    image: redis:8.6.0-alpine3.23
+    container_name: ngn-calc-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Spring Boot Backend ──
+  # Image built via: cd backEnd && ./gradlew bootBuildImage
+  # Uses Spring Boot Buildpacks (Paketo) — no Dockerfile needed
+  backend:
+    profiles:
+      - app
+    image: ngn-calc-backend:latest
+    container_name: ngn-calc-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ngn_calc?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-root}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-123456}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      CORS_CONFIG_ALLOWED_ORIGINS: http://localhost
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+
+  # ── Angular Frontend (nginx) ──
+  frontend:
+    profiles:
+      - app
+    build:
+      context: ./frontEnd
+      dockerfile: Dockerfile
+    container_name: ngn-calc-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
+  redis-data:
