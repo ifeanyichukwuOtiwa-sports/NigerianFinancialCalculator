@@ -1,9 +1,10 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { ThemeService, Theme } from '../../services/theme.service';
-import { NavigationService } from '../../services/navigation.service';
-import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '@app/services/theme.service';
+import { NavigationService } from '@app/services/navigation.service';
+import { AuthService } from '@app/services/auth.service';
 import * as Const from '../../app.constants';
+import { Theme } from '@app/types/theme.types';
 
 @Component({
 	selector: 'app-navbar',

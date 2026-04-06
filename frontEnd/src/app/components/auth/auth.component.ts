@@ -1,13 +1,12 @@
 import { Component, signal, inject, ChangeDetectionStrategy, ElementRef, viewChild, afterNextRender } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { A11yModule } from '@angular/cdk/a11y';
 import { AuthService } from '../../services/auth.service';
 import { NavigationService } from '../../services/navigation.service';
 
 @Component({
 	selector: 'app-auth',
-	imports: [ReactiveFormsModule, A11yModule],
+	imports: [ReactiveFormsModule],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	templateUrl: './auth.component.html',
 	styleUrl: './auth.component.scss'
@@ -26,7 +25,7 @@ export class AuthComponent {
 	protected readonly errorMessage = signal<string | null>(null);
 	protected readonly successMessage = signal<string | null>(null);
 
-	protected readonly overlayRef = viewChild<ElementRef<HTMLDivElement>>('overlay');
+	protected readonly dialogRef = viewChild<ElementRef<HTMLDialogElement>>('authDialog');
 
 	constructor() {
 		const mode = this.navService.authModal();
@@ -37,9 +36,9 @@ export class AuthComponent {
 		// Capture the currently focused element (the trigger button) before the modal renders
 		this.triggerElement = document.activeElement as HTMLElement | null;
 
-		// After the modal renders, move focus to the overlay so Escape works immediately
+		// After the modal renders, open it as a modal using the native showModal() for accessibility
 		afterNextRender(() => {
-			this.overlayRef()?.nativeElement.focus();
+			this.dialogRef()?.nativeElement.showModal();
 		});
 	}
 
@@ -55,6 +54,10 @@ export class AuthComponent {
 	});
 
 	protected close(): void {
+		this.dialogRef()?.nativeElement.close();
+	}
+
+	protected onDialogClose(): void {
 		this.navService.closeAuth();
 
 		// Restore focus to the element that triggered the modal
@@ -88,7 +91,7 @@ export class AuthComponent {
 		this.authService.login({ email, password }).subscribe({
 			next: () => {
 				this.loading.set(false);
-				this.navService.closeAuth();
+				this.close();
 				this.router.navigate(['/calculator']);
 			},
 			error: (err) => {

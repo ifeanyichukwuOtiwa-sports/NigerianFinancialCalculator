@@ -2,12 +2,12 @@ import { Component, input, output } from '@angular/core';
 import { Milestone } from '../../app.types';
 
 @Component({
-  selector: 'app-milestones',
-  imports: [],
-  templateUrl: './milestones.component.html',
-  styleUrl: './milestones.component.scss'
+	selector: 'app-milestones',
+	imports: [],
+	templateUrl: './milestones.component.html',
+	styleUrl: './milestones.component.scss',
 })
 export class MilestonesComponent {
-  milestones = input.required<Milestone[]>();
-  selectYear = output<number>();
+	milestones = input.required<Milestone[]>();
+	selectYear = output<number>();
 }

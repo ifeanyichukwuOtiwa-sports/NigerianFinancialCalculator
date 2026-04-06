@@ -1,26 +1,25 @@
 import {
+	AfterViewInit,
 	Component,
+	effect,
 	ElementRef,
+	inject,
 	input,
 	OnDestroy,
 	output,
-	ViewChild,
-	effect,
-	AfterViewInit,
-	Inject,
 	PLATFORM_ID,
 	signal,
-	inject,
+	ViewChild,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Chart } from 'chart.js/auto';
-import { ThemeService } from '../../services/theme.service';
+import { ThemeService } from '@app/services/theme.service';
 
 @Component({
 	selector: 'app-investment-chart',
 	imports: [],
 	templateUrl: './investment-chart.component.html',
-	styleUrl: './investment-chart.component.scss'
+	styleUrl: './investment-chart.component.scss',
 })
 export class InvestmentChartComponent implements AfterViewInit, OnDestroy {
 	@ViewChild('chartCanvas') protected readonly chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -35,10 +34,11 @@ export class InvestmentChartComponent implements AfterViewInit, OnDestroy {
 
 	private chart: Chart | null = null;
 	private readonly isBrowser: boolean;
+	private readonly platformId = inject(PLATFORM_ID);
 	private readonly chartReady = signal(false);
 	private readonly themeService = inject(ThemeService);
 
-	constructor(@Inject(PLATFORM_ID) private platformId: object) {
+	constructor() {
 		this.isBrowser = isPlatformBrowser(this.platformId);
 		this.setupChartLogic();
 	}
@@ -55,7 +55,13 @@ export class InvestmentChartComponent implements AfterViewInit, OnDestroy {
 	}
 
 	private getThemeColors() {
-		if (!this.isBrowser) return { primary: '#10b981', secondary: '#3b82f6', muted: '#64748b', grid: 'rgba(0,0,0,0.05)' };
+		if (!this.isBrowser)
+			return {
+				primary: '#10b981',
+				secondary: '#3b82f6',
+				muted: '#64748b',
+				grid: 'rgba(0,0,0,0.05)',
+			};
 		const styles = getComputedStyle(document.documentElement);
 		return {
 			primary: styles.getPropertyValue('--primary').trim() || '#10b981',
@@ -151,7 +157,8 @@ export class InvestmentChartComponent implements AfterViewInit, OnDestroy {
 					legend: { display: false },
 					tooltip: {
 						callbacks: {
-							label: (ctx) => `${ctx.dataset.label}: ₦${Math.round(ctx.raw as number).toLocaleString()}`,
+							label: (ctx) =>
+								`${ctx.dataset.label}: ₦${Math.round(ctx.raw as number).toLocaleString()}`,
 						},
 					},
 				},
@@ -163,7 +170,7 @@ export class InvestmentChartComponent implements AfterViewInit, OnDestroy {
 							color: colors.muted,
 							callback: (_, index) => {
 								const labels = this.labels();
-								return index % 2 === 0 ? (labels[index] || '') : '';
+								return index % 2 === 0 ? labels[index] || '' : '';
 							},
 						},
 					},
@@ -174,7 +181,8 @@ export class InvestmentChartComponent implements AfterViewInit, OnDestroy {
 						grace: '10%',
 						ticks: {
 							color: colors.muted,
-							callback: (v) => '₦' + (Number(v) >= 1000 ? (Number(v) / 1000).toFixed(0) + 'k' : v),
+							callback: (v) =>
+								'₦' + (Number(v) >= 1000 ? (Number(v) / 1000).toFixed(0) + 'k' : v),
 						},
 					},
 				},

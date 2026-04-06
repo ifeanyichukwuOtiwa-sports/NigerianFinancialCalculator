@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TaxServiceTest {
 
@@ -22,13 +22,13 @@ class TaxServiceTest {
     @Test
     void testCalculateDetailedPIT_ZeroIncome() {
         TaxService.PITResult result = taxService.calculateDetailedPIT(BigDecimal.ZERO, NIGERIA_PIT_BANDS_2026);
-        assertEquals(0, BigDecimal.ZERO.compareTo(result.totalTax()));
+        assertThat(BigDecimal.ZERO.compareTo(result.totalTax())).isZero();
     }
 
     @Test
     void testCalculateDetailedPIT_BelowExempt() {
         TaxService.PITResult result = taxService.calculateDetailedPIT(new BigDecimal("500000"), NIGERIA_PIT_BANDS_2026);
-        assertEquals(0, BigDecimal.ZERO.compareTo(result.totalTax()));
+        assertThat(BigDecimal.ZERO.compareTo(result.totalTax())).isZero();
     }
 
     @Test
@@ -36,12 +36,12 @@ class TaxServiceTest {
         // First 800k exempt. Next 2.2M at 15%.
         // Income 1M -> 800k exempt, 200k at 15% = 30k
         TaxService.PITResult result = taxService.calculateDetailedPIT(new BigDecimal("1000000"), NIGERIA_PIT_BANDS_2026);
-        assertEquals(0, new BigDecimal("30000.00").compareTo(result.totalTax()));
+        assertThat(new BigDecimal("30000.00").compareTo(result.totalTax())).isZero();
     }
 
     @Test
     void testDetailedPIT_BandResultsCount() {
         TaxService.PITResult result = taxService.calculateDetailedPIT(new BigDecimal("1000000"), NIGERIA_PIT_BANDS_2026);
-        assertEquals(NIGERIA_PIT_BANDS_2026.size(), result.bandResults().size());
+        assertThat(result.bandResults()).hasSize(NIGERIA_PIT_BANDS_2026.size());
     }
 }

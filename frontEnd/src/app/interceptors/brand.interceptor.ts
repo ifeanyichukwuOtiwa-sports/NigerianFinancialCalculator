@@ -2,7 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 
 export const brandInterceptor: HttpInterceptorFn = (req, next) => {
 	const branded = req.clone({
-		setHeaders: { 'X-App-Brand': 'NGN' }
+		setHeaders: { 'x-app-brand': 'NGN' },
 	});
 	return next(branded);
 };

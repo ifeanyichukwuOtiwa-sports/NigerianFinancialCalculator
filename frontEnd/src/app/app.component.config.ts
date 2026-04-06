@@ -1,4 +1,4 @@
-import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideAppInitializer, provideBrowserGlobalErrorListeners, inject } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -12,11 +12,9 @@ export const appComponentConfig: ApplicationConfig = {
 		provideBrowserGlobalErrorListeners(),
 		provideRouter(appRoutes, withComponentInputBinding()),
 		provideHttpClient(withInterceptors([brandInterceptor, authInterceptor])),
-		{
-			provide: APP_INITIALIZER,
-			useFactory: (authService: AuthService) => () => firstValueFrom(authService.checkSession()),
-			deps: [AuthService],
-			multi: true
-		}
+		provideAppInitializer(() => {
+			const authService = inject(AuthService);
+			return firstValueFrom(authService.checkSession());
+		})
 	]
 };

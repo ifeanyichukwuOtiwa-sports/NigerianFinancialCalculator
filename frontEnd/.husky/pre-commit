@@ -1,0 +1,1 @@
+cd frontEnd && npm run lint

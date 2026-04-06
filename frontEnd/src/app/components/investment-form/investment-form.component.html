@@ -4,9 +4,10 @@
       <label for="principal">Initial investment</label>
       @if (editingField() === 'principal') {
         <input class="value-input" type="number" [ngModel]="principal()" (ngModelChange)="principal.set(+$event)"
-               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" autofocus />
+               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" />
       } @else {
-        <span class="value-display" (click)="editingField.set('principal')">{{ principal() | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+        <span class="value-display" role="button" tabindex="0" (click)="editingField.set('principal')"
+              (keydown.enter)="editingField.set('principal')">{{ principal() | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
       }
     </div>
     <input id="principal" type="range" min="100" [max]="maxPrincipal" step="100" [ngModel]="principal()"
@@ -17,9 +18,10 @@
       <label for="rate">Annual rate (%)</label>
       @if (editingField() === 'rate') {
         <input class="value-input" type="number" [ngModel]="rate()" (ngModelChange)="rate.set(+$event)" step="0.1"
-               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" autofocus />
+               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" />
       } @else {
-        <span class="value-display" (click)="editingField.set('rate')">{{ rate() }}%</span>
+        <span class="value-display" role="button" tabindex="0" (click)="editingField.set('rate')"
+              (keydown.enter)="editingField.set('rate')">{{ rate() }}%</span>
       }
     </div>
     <input id="rate" type="range" min="1" max="20" step="0.1" [ngModel]="rate()"
@@ -30,9 +32,10 @@
       <label for="years">Years</label>
       @if (editingField() === 'years') {
         <input class="value-input" type="number" [ngModel]="years()" (ngModelChange)="years.set(+$event)"
-               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" autofocus />
+               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" />
       } @else {
-        <span class="value-display" (click)="editingField.set('years')">{{ years() }}</span>
+        <span class="value-display" role="button" tabindex="0" (click)="editingField.set('years')"
+              (keydown.enter)="editingField.set('years')">{{ years() }}</span>
       }
     </div>
     <input id="years" type="range" min="1" max="50" step="1" [ngModel]="years()"
@@ -43,17 +46,18 @@
       <label for="monthly">{{ activeFrequencyLabel() }} Contribution</label>
       @if (editingField() === 'monthly') {
         <input class="value-input" type="number" [ngModel]="monthly()" (ngModelChange)="monthly.set(+$event)"
-               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" autofocus />
+               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" />
       } @else {
-        <span class="value-display" (click)="editingField.set('monthly')">{{ monthly() | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
+        <span class="value-display" role="button" tabindex="0" (click)="editingField.set('monthly')"
+              (keydown.enter)="editingField.set('monthly')">{{ monthly() | currency:'NGN':'symbol-narrow':'1.0-0' }}</span>
       }
     </div>
     <input id="monthly" type="range" min="0" max="10000" step="1" [ngModel]="monthly()"
            (ngModelChange)="monthly.set(+$event)" />
   </div>
   <div class="ctrl full-width">
-    <label>Compounding Frequency</label>
-    <div class="frequency-toggle toggle-group glass-card">
+    <span id="compounding-freq-label" class="label-text">Compounding Frequency</span>
+    <div class="frequency-toggle toggle-group glass-card" aria-labelledby="compounding-freq-label">
       @for (opt of frequencyOptions; track opt.value) {
         <button [class.active]="frequency() === opt.value"
                 (click)="frequency.set(opt.value)">

@@ -21,9 +21,9 @@ A summary of problems encountered, solutions applied, and the reasoning behind e
 **Solution:**
 - Added a `GET /api/auth/me` endpoint on the backend that reads the authenticated user from the Spring Security session context
 - Added a `checkSession()` method in the frontend `AuthService` that calls `/api/auth/me`
-- Used `APP_INITIALIZER` to call `checkSession()` on app startup, blocking rendering until the check completes
+- Used `provideAppInitializer` to call `checkSession()` on app startup, blocking rendering until the check completes
 
-**Why:** Angular signals (`currentUser = signal(null)`) reset to their initial value on every page load because JavaScript state doesn't survive a full page reload. The server still knows the user (via the `SESSION` cookie the browser sends automatically), but the Angular app has "amnesia." The `APP_INITIALIZER` pattern ensures the app re-hydrates auth state from the server before rendering anything — preventing a flash of the landing page. This is the same pattern used in production apps (e.g., Admin project uses `APP_INITIALIZER` + cookie token validation, Spok uses router `beforeEach` guard + backend `/component-data` API).
+**Why:** Angular signals (`currentUser = signal(null)`) reset to their initial value on every page load because JavaScript state doesn't survive a full page reload. The server still knows the user (via the `SESSION` cookie the browser sends automatically), but the Angular app has "amnesia." The `provideAppInitializer` pattern ensures the app re-hydrates auth state from the server before rendering anything — preventing a flash of the landing page. This is the same pattern used in production apps (e.g., Admin project uses `provideAppInitializer` + cookie token validation, Spok uses router `beforeEach` guard + backend `/component-data` API).
 
 **Key Takeaway:** Never persist `isAuthenticated` in `localStorage` alone — always re-derive it from the backend. Both the Admin and Spok reference projects explicitly exclude auth state from client-side persistence.
 
@@ -237,20 +237,18 @@ Buildpacks is the officially recommended approach for Spring Boot. The tradeoff 
 
 ---
 
-## 20. `APP_INITIALIZER` Pattern
+## 20. `provideAppInitializer` Pattern
 
-**Reference:** `APP_INITIALIZER` is an Angular injection token that accepts factory functions executed during app bootstrap. Angular **blocks rendering** until all initializers complete. This is useful for:
+**Reference:** `provideAppInitializer` is the modern Angular API (introduced in v18, replacing the deprecated `APP_INITIALIZER` token) for executing functions during app bootstrap. Angular **blocks rendering** until the initializer completes. This is useful for:
 - Checking auth session before showing any UI (prevents landing page flash)
 - Loading configuration from a server
 - Fetching user preferences or brand settings
 
 ```typescript
-{
-  provide: APP_INITIALIZER,
-  useFactory: (authService: AuthService) => () => firstValueFrom(authService.checkSession()),
-  deps: [AuthService],
-  multi: true  // allows multiple initializers
-}
+provideAppInitializer(() => {
+  const authService = inject(AuthService);
+  return firstValueFrom(authService.checkSession());
+})
 ```
 
 **Caution:** If the initializer's HTTP call is slow or fails without a timeout, the app hangs on a blank screen. Always include `catchError` in the observable and consider adding a timeout.
@@ -263,7 +261,7 @@ Buildpacks is the officially recommended approach for Spring Boot. The tradeoff 
 
 | Pattern | How | Pros | Cons |
 |---|---|---|---|
-| `GET /api/me` + `APP_INITIALIZER` | Backend endpoint validates session cookie; blocks app render until check completes | Server is source of truth; no stale state | Extra HTTP request on every page load |
+| `GET /api/me` + `provideAppInitializer` | Backend endpoint validates session cookie; blocks app render until check completes | Server is source of truth; no stale state | Extra HTTP request on every page load |
 | `localStorage` + background validation | Restore user from `localStorage` immediately; validate with server in background | Instant UI; no flash | Can show stale/wrong state briefly |
 | JWT tokens | Stateless auth; token stored client-side | Scales horizontally; no server session store | Major backend refactor; token refresh complexity |
 | Cookie with user info | Server sets a non-httpOnly cookie with display data | No extra HTTP call | Cookie size limits; XSS readable |
@@ -504,7 +502,7 @@ effect(() => {
 
 **Solution:** Defined all colors as CSS custom properties (`--bg-color`, `--text-color`, `--primary`, `--secondary`, `--card-bg`, etc.) in `styles.scss`, then overrode them using `[data-theme="dark"]` and `[data-theme="light"]` attribute selectors.
 
-**Why:** CSS custom properties cascade through the DOM. By setting them on `<html>` via `document.documentElement.setAttribute('data-theme', 'dark')`, every element in the app instantly picks up the new values — no JavaScript re-render needed. Components reference `var(--primary)` instead of `#10b981`, and the `ThemeService` only needs to toggle one attribute.
+**Why:** CSS custom properties cascade through the DOM. By setting them on `<html>` via `document.documentElement.dataset['theme'] = 'dark'`, every element in the app instantly picks up the new values — no JavaScript re-render needed. Components reference `var(--primary)` instead of `#10b981`, and the `ThemeService` only needs to toggle one attribute.
 
 ```scss
 :root { --bg-color: #ffffff; --text-color: #1e293b; }

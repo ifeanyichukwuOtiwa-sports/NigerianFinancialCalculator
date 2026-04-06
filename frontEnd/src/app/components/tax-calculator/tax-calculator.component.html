@@ -30,9 +30,10 @@
       </label>
       @if (editingField() === 'periodicValue') {
         <input class="value-input" type="number" [ngModel]="periodicValue()" (ngModelChange)="onPeriodicInputChange(+$event)"
-               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" autofocus />
+               (blur)="editingField.set(null)" (keyup.enter)="editingField.set(null)" />
       } @else {
-        <span class="value-display" (click)="editingField.set('periodicValue')">
+        <span class="value-display" role="button" tabindex="0" (click)="editingField.set('periodicValue')"
+              (keydown.enter)="editingField.set('periodicValue')">
           {{ periodicValue() | currency:'NGN':'symbol-narrow':'1.0-0' }}
         </span>
       }

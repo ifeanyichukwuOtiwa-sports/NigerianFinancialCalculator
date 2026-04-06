@@ -1,4 +1,4 @@
-import { CompoundingFrequency, FrequencyOption, TaxBand, TaxStrategyOption, IncomeFrequency } from './app.types';
+import { CompoundingFrequency, FrequencyOption, IncomeFrequency, TaxBand, TaxStrategyOption } from './app.types';
 
 /**
  * Initial State Defaults
@@ -32,33 +32,37 @@ export const MILESTONE_TARGETS = [2, 5, 10, 20, 40, 50, 100];
  * Compounding Frequency Definitions
  */
 export const FREQUENCY_OPTIONS: FrequencyOption[] = [
-  { label: 'Monthly', value: 'monthly', periods: 12 },
-  { label: 'Quarterly', value: 'quarterly', periods: 4 },
-  { label: 'Bi-Annually', value: 'bi-annually', periods: 2 },
-  { label: 'Annually', value: 'annually', periods: 1 }
+	{ label: 'Monthly', value: 'monthly', periods: 12 },
+	{ label: 'Quarterly', value: 'quarterly', periods: 4 },
+	{ label: 'Bi-Annually', value: 'bi-annually', periods: 2 },
+	{ label: 'Annually', value: 'annually', periods: 1 },
 ];
 
 /**
  * Income Frequency Definitions (for Tax)
  */
-export const INCOME_FREQUENCY_OPTIONS: { label: string, value: IncomeFrequency, periods: number }[] = [
-  { label: 'Weekly', value: 'weekly', periods: 52 },
-  { label: 'Monthly', value: 'monthly', periods: 12 },
-  { label: 'Annually', value: 'annually', periods: 1 }
+export const INCOME_FREQUENCY_OPTIONS: {
+	label: string;
+	value: IncomeFrequency;
+	periods: number;
+}[] = [
+	{ label: 'Weekly', value: 'weekly', periods: 52 },
+	{ label: 'Monthly', value: 'monthly', periods: 12 },
+	{ label: 'Annually', value: 'annually', periods: 1 },
 ];
 
 /**
  * Nigeria Tax Act 2025 (Effective Jan 1, 2026) Configuration
  */
-export const NIGERIA_WHT_RATE = 0.10; // 10% Withholding Tax
+export const NIGERIA_WHT_RATE = 0.1; // 10% Withholding Tax
 
 export const NIGERIA_PIT_BANDS_2026: TaxBand[] = [
-  { limit: 800000, rate: 0.00 },   // First ₦800,000 (Exempt)
-  { limit: 2200000, rate: 0.15 },  // Next ₦2,200,000 (15%)
-  { limit: 9000000, rate: 0.18 },  // Next ₦9,000,000 (18%)
-  { limit: 13000000, rate: 0.21 }, // Next ₦13,000,000 (21%)
-  { limit: 25000000, rate: 0.23 }, // Next ₦25,000,000 (23%)
-  { limit: Infinity, rate: 0.25 }, // Above ₦50,000,000 (25%)
+	{ limit: 800000, rate: 0.0 }, // First ₦800,000 (Exempt)
+	{ limit: 2200000, rate: 0.15 }, // Next ₦2,200,000 (15%)
+	{ limit: 9000000, rate: 0.18 }, // Next ₦9,000,000 (18%)
+	{ limit: 13000000, rate: 0.21 }, // Next ₦13,000,000 (21%)
+	{ limit: 25000000, rate: 0.23 }, // Next ₦25,000,000 (23%)
+	{ limit: Infinity, rate: 0.25 }, // Above ₦50,000,000 (25%)
 ];
 
 /**
@@ -67,16 +71,24 @@ export const NIGERIA_PIT_BANDS_2026: TaxBand[] = [
 export const NIGERIA_PIT_THRESHOLDS_2026 = [0, 800000, 3000000, 12000000, 25000000, 50000000];
 
 export const TAX_STRATEGY_OPTIONS: TaxStrategyOption[] = [
-  { label: 'Exempt (FGN Bonds)', value: 'none', description: 'No tax applied to interest' },
-  { label: '10% WHT (Standard)', value: 'wht', description: 'Flat 10% Withholding Tax on interest' },
-  { label: 'Progressive PIT', value: 'progressive', description: 'Personal Income Tax based on 2026 bands' }
+	{ label: 'Exempt (FGN Bonds)', value: 'none', description: 'No tax applied to interest' },
+	{
+		label: '10% WHT (Standard)',
+		value: 'wht',
+		description: 'Flat 10% Withholding Tax on interest',
+	},
+	{
+		label: 'Progressive PIT',
+		value: 'progressive',
+		description: 'Personal Income Tax based on 2026 bands',
+	},
 ];
 
 /**
  * Theme Time Intensity Thresholds
  */
 export const TIME_PERIODS = {
-  COOL: { start: 0, end: 6 },
-  WARM: { start: 6, end: 12 },
-  HOT: { start: 12, end: 15 }
+	COOL: { start: 0, end: 6 },
+	WARM: { start: 6, end: 12 },
+	HOT: { start: 12, end: 15 },
 };

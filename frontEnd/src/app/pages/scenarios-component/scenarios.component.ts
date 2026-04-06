@@ -1,16 +1,17 @@
-import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
-import { ScenarioApiService, ScenarioResponse } from '../../services/scenario-api.service';
+import { ScenarioApiService } from '@app/services/scenario-api.service';
+import { ScenarioResponse } from '@app/types/scenario.types';
 
 @Component({
 	selector: 'app-scenarios-page',
 	imports: [CurrencyPipe],
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	templateUrl: './scenarios.page.html',
+	templateUrl: './scenarios.component.html',
 	styleUrl: '../../components/my-scenarios/my-scenarios.component.scss',
 })
-export class ScenariosPage {
+export class ScenariosComponent {
 	private readonly scenarioApi = inject(ScenarioApiService);
 	private readonly router = inject(Router);
 
@@ -34,7 +35,7 @@ export class ScenariosPage {
 			error: (err) => {
 				this.errorMessage.set(err.error?.message ?? 'Failed to load scenarios.');
 				this.loading.set(false);
-			}
+			},
 		});
 	}
 
@@ -45,11 +46,11 @@ export class ScenariosPage {
 	protected onDelete(scenario: ScenarioResponse): void {
 		this.scenarioApi.delete(scenario.id).subscribe({
 			next: () => {
-				this.scenarios.update(list => list.filter(s => s.id !== scenario.id));
+				this.scenarios.update((list) => list.filter((s) => s.id !== scenario.id));
 			},
 			error: (err) => {
 				this.errorMessage.set(err.error?.message ?? 'Failed to delete scenario.');
-			}
+			},
 		});
 	}
 }

@@ -56,14 +56,17 @@ public class AuthService {
                 new BrandAuthentication(brand, request.email(), request.password())
         );
 
-        SecurityContext sc = SecurityContextHolder.getContext();
-        sc.setAuthentication(authentication);
+        if (authentication instanceof BrandAuthentication brandAuth) {
+            SecurityContext sc = SecurityContextHolder.getContext();
+            sc.setAuthentication(brandAuth);
 
-        HttpSession session = httpServletRequest.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
+            HttpSession session = httpServletRequest.getSession(true);
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
 
-        BrandAuthentication brandAuth = (BrandAuthentication) authentication;
-        return getCurrentUser(brandAuth);
+            return getCurrentUser(brandAuth);
+        }
+
+        throw new RequestException("Authentication failed", ErrorCode.AUTH_FAILED, Map.of());
     }
 
     public AuthResponse getCurrentUser(BrandAuthentication brandAuth) {

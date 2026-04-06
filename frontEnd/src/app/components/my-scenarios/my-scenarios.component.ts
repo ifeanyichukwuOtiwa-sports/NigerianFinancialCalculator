@@ -1,6 +1,7 @@
 import { Component, signal, inject, output, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { ScenarioApiService, ScenarioResponse } from '../../services/scenario-api.service';
+import { ScenarioApiService } from '@app/services/scenario-api.service';
+import { ScenarioResponse } from '@app/types/scenario.types';
 
 @Component({
 	selector: 'app-my-scenarios',

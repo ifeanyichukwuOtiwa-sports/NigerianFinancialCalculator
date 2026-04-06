@@ -1,15 +1,16 @@
-import { Component, computed, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { YearBreakdown, Milestone, CompoundingFrequency, TaxStrategy } from '../../app.types';
-import { calculateFutureBalance } from '../../app.utils';
-import { ScenarioApiService, ScenarioResponse } from '../../services/scenario-api.service';
+import { CompoundingFrequency, Milestone, TaxStrategy, YearBreakdown } from '@app/app.types';
+import { calculateFutureBalance } from '@app/app.utils';
+import { ScenarioApiService } from '@app/services/scenario-api.service';
 import * as Const from '../../app.constants';
 
-import { InvestmentFormComponent } from '../../components/investment-form/investment-form.component';
-import { SummaryMetricsComponent } from '../../components/summary-metrics/summary-metrics.component';
-import { YearBreakdownComponent } from '../../components/year-breakdown/year-breakdown.component';
-import { MilestonesComponent } from '../../components/milestones/milestones.component';
-import { InvestmentChartComponent } from '../../components/investment-chart/investment-chart.component';
+import { InvestmentFormComponent } from '@app/components/investment-form/investment-form.component';
+import { SummaryMetricsComponent } from '@app/components/summary-metrics/summary-metrics.component';
+import { YearBreakdownComponent } from '@app/components/year-breakdown/year-breakdown.component';
+import { MilestonesComponent } from '@app/components/milestones/milestones.component';
+import { InvestmentChartComponent } from '@app/components/investment-chart/investment-chart.component';
+import { ScenarioResponse } from '@app/types/scenario.types';
 
 @Component({
 	selector: 'app-calculator-page',
@@ -21,36 +22,9 @@ import { InvestmentChartComponent } from '../../components/investment-chart/inve
 		InvestmentChartComponent,
 	],
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	template: `
-		<app-investment-form
-			[(principal)]="principal"
-			[(rate)]="rate"
-			[(years)]="years"
-			[(monthly)]="monthly"
-			[(frequency)]="frequency"
-			[saving]="scenarioSaving()"
-			[saveMessage]="scenarioMessage()"
-			(saveScenario)="saveScenario($event)" />
-		<app-summary-metrics
-			[totalInvested]="totalInvested()"
-			[interestEarned]="interestEarned()"
-			[balance]="balance()" />
-		@if (selectedYearData()) {
-			<app-year-breakdown
-				[data]="selectedYearData()!"
-				(close)="selectedYear.set(null)" />
-		}
-		<app-milestones
-			[milestones]="milestones()"
-			(selectYear)="selectedYear.set($event)" />
-		<app-investment-chart
-			[labels]="chartLabels()"
-			[investedData]="investedData()"
-			[interestData]="interestData()"
-			(yearSelected)="selectedYear.set($event)" />
-	`,
+	templateUrl: './calculator.component.html',
 })
-export class CalculatorPage {
+export class CalculatorComponent {
 	private readonly scenarioApi = inject(ScenarioApiService);
 	private readonly router = inject(Router);
 
@@ -67,7 +41,8 @@ export class CalculatorPage {
 	protected scenarioMessage = signal<string | null>(null);
 
 	constructor() {
-		const nav = this.router.getCurrentNavigation();
+		const nav = this.router.currentNavigation();
+
 		const scenario = nav?.extras?.state?.['scenario'] as ScenarioResponse | undefined;
 		if (scenario) {
 			this.principal.set(scenario.principal);
@@ -82,7 +57,7 @@ export class CalculatorPage {
 
 	protected readonly periods = computed(() => {
 		const f = this.frequency();
-		return Const.FREQUENCY_OPTIONS.find(o => o.value === f)?.periods || 12;
+		return Const.FREQUENCY_OPTIONS.find((o) => o.value === f)?.periods || 12;
 	});
 
 	protected readonly results = computed(() => {
@@ -93,7 +68,7 @@ export class CalculatorPage {
 			this.monthly(),
 			this.periods(),
 			this.taxStrategy(),
-			this.annualIncome()
+			this.annualIncome(),
 		);
 	});
 
@@ -113,8 +88,8 @@ export class CalculatorPage {
 				this.monthly(),
 				this.periods(),
 				this.taxStrategy(),
-				this.annualIncome()
-			)
+				this.annualIncome(),
+			),
 		};
 	});
 
@@ -126,10 +101,22 @@ export class CalculatorPage {
 		let targetIndex = 0;
 
 		for (let y = 1; y <= years; y++) {
-			const res = calculateFutureBalance(P, this.rate(), y, this.monthly(), this.periods(), this.taxStrategy(), this.annualIncome());
+			const res = calculateFutureBalance(
+				P,
+				this.rate(),
+				y,
+				this.monthly(),
+				this.periods(),
+				this.taxStrategy(),
+				this.annualIncome(),
+			);
 			const bal = res.netBalance;
 			while (targetIndex < targets.length && bal >= P * targets[targetIndex]) {
-				results.push({ year: y, label: `${targets[targetIndex]}x Principal`, value: Math.round(bal) });
+				results.push({
+					year: y,
+					label: `${targets[targetIndex]}x Principal`,
+					value: Math.round(bal),
+				});
 				targetIndex++;
 			}
 		}
@@ -137,14 +124,34 @@ export class CalculatorPage {
 	});
 
 	protected readonly investedData = computed(() => {
-		return Array.from({ length: this.years() + 1 }, (_, y) =>
-			calculateFutureBalance(this.principal(), this.rate(), y, this.monthly(), this.periods(), this.taxStrategy(), this.annualIncome()).totalInvested
+		return Array.from(
+			{ length: this.years() + 1 },
+			(_, y) =>
+				calculateFutureBalance(
+					this.principal(),
+					this.rate(),
+					y,
+					this.monthly(),
+					this.periods(),
+					this.taxStrategy(),
+					this.annualIncome(),
+				).totalInvested,
 		);
 	});
 
 	protected readonly interestData = computed(() => {
-		return Array.from({ length: this.years() + 1 }, (_, y) =>
-			calculateFutureBalance(this.principal(), this.rate(), y, this.monthly(), this.periods(), this.taxStrategy(), this.annualIncome()).netInterest
+		return Array.from(
+			{ length: this.years() + 1 },
+			(_, y) =>
+				calculateFutureBalance(
+					this.principal(),
+					this.rate(),
+					y,
+					this.monthly(),
+					this.periods(),
+					this.taxStrategy(),
+					this.annualIncome(),
+				).netInterest,
 		);
 	});
 
@@ -156,24 +163,26 @@ export class CalculatorPage {
 		this.scenarioSaving.set(true);
 		this.scenarioMessage.set(null);
 
-		this.scenarioApi.save({
-			name,
-			principal: this.principal(),
-			annualRate: this.rate(),
-			years: this.years(),
-			monthlyContribution: this.monthly(),
-			compoundingFrequency: this.frequency(),
-			taxStrategy: this.taxStrategy(),
-			annualIncome: this.annualIncome(),
-		}).subscribe({
-			next: () => {
-				this.scenarioSaving.set(false);
-				this.scenarioMessage.set('Scenario saved successfully!');
-			},
-			error: (err) => {
-				this.scenarioSaving.set(false);
-				this.scenarioMessage.set(err.error?.message ?? 'Failed to save scenario.');
-			}
-		});
+		this.scenarioApi
+			.save({
+				name,
+				principal: this.principal(),
+				annualRate: this.rate(),
+				years: this.years(),
+				monthlyContribution: this.monthly(),
+				compoundingFrequency: this.frequency(),
+				taxStrategy: this.taxStrategy(),
+				annualIncome: this.annualIncome(),
+			})
+			.subscribe({
+				next: () => {
+					this.scenarioSaving.set(false);
+					this.scenarioMessage.set('Scenario saved successfully!');
+				},
+				error: (err) => {
+					this.scenarioSaving.set(false);
+					this.scenarioMessage.set(err.error?.message ?? 'Failed to save scenario.');
+				},
+			});
 	}
 }

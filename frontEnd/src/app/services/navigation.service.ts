@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import { AuthModal } from '@app/types/nav.types';
 
-export type AuthModal = 'login' | 'register' | null;
 
 @Injectable({ providedIn: 'root' })
 export class NavigationService {
