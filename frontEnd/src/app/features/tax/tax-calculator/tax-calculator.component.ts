@@ -4,8 +4,8 @@ import { CurrencyPipe, DecimalPipe, TitleCasePipe } from '@angular/common';
 import { calculateDetailedPIT, calculateIncomeFromTax } from '@app/shared/utils/app.utils';
 import * as Const from '@app/shared/utils/app.constants';
 import { IncomeFrequency, PITResult } from '@app/shared/types/app.types';
-import { TaxApiService } from '../tax.api.service';
-import { ScenarioApiService } from '@app/features/scenarios/scenario-api.service';
+import { TaxApiService } from '@app/shared/services/tax.api.service';
+import { ScenarioApiService } from '@app/shared/services/scenario-api.service';
 import { Router } from '@angular/router';
 
 @Component({

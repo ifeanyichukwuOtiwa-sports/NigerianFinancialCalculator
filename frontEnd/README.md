@@ -60,13 +60,14 @@ The application follows a modern, modular architecture organized by feature and 
 ## 🚀 Getting Started
 
 ### Prerequisites
-*   Node.js 22+
+*   Node.js 24 LTS
 *   npm
 
 ### Installation
 1. Clone the repository.
 2. Install dependencies:
    ```bash
+   nvm use
    npm install
    ```
 

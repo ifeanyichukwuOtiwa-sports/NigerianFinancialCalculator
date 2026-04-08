@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { HttpInterceptorFn } from '@angular/common/http';
-import { BrandService } from '@app/core/services/brand.service';
+import { BrandService } from '@app/shared/services/brand.service';
 
 export const brandInterceptor: HttpInterceptorFn = (req, next) => {
 	const brandService = inject(BrandService);

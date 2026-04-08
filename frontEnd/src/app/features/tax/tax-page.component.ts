@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { TaxCalculatorComponent } from './components/tax-calculator.component';
+import { TaxCalculatorComponent } from '@app/features/tax/tax-calculator/tax-calculator.component';
 
 @Component({
 	selector: 'app-tax-page',

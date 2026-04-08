@@ -7,15 +7,16 @@ import {
 	YearBreakdown,
 } from '@app/shared/types/app.types';
 import { calculateFutureBalance } from '@app/shared/utils/app.utils';
-import { ScenarioApiService } from '@app/features/scenarios/scenario-api.service';
 import * as Const from '@app/shared/utils/app.constants';
 
-import { InvestmentFormComponent } from './components/investment-form.component';
-import { SummaryMetricsComponent } from './components/summary-metrics.component';
-import { YearBreakdownComponent } from './components/year-breakdown.component';
-import { MilestonesComponent } from './components/milestones.component';
-import { InvestmentChartComponent } from './components/investment-chart.component';
 import { ScenarioResponse } from '@app/shared/types/scenario.types';
+import { InvestmentFormComponent } from '@app/features/investment/investment-form/investment-form.component';
+import { SummaryMetricsComponent } from '@app/features/investment/summary-metrics/summary-metrics.component';
+import { YearBreakdownComponent } from '@app/features/investment/year-breakdown/year-breakdown.component';
+import { MilestonesComponent } from '@app/features/investment/milestones/milestones.component';
+import { InvestmentChartComponent } from '@app/features/investment/investment-chart/investment-chart.component';
+import { ScenarioApiService } from '@app/shared/services/scenario-api.service';
+
 
 @Component({
 	selector: 'app-calculator-page',

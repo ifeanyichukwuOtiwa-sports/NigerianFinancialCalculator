@@ -9,8 +9,8 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '@app/core/services/auth.service';
-import { NavigationService } from '@app/core/services/navigation.service';
+import { AuthService } from '@app/shared/services/auth.service';
+import { NavigationService } from '@app/shared/services/navigation.service';
 
 @Component({
 	selector: 'app-auth',

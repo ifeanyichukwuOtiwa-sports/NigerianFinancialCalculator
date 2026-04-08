@@ -1,5 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { NavigationService } from '@app/core/services/navigation.service';
+import { NavigationService } from '@app/shared/services/navigation.service';
 
 @Component({
 	selector: 'app-component-page',

@@ -12,6 +12,9 @@
 	},
 	"private": true,
 	"packageManager": "npm@11.11.1",
+	"engines": {
+		"node": "24.x"
+	},
 	"dependencies": {
 		"@angular/cdk": "^21.2.5",
 		"@angular/common": "^21.2.0",

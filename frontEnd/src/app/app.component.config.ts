@@ -10,7 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { appRoutes } from './app.routes';
 import { brandInterceptor } from './core/interceptors/brand.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { AuthService } from './core/services/auth.service';
+import { AuthService } from '@app/shared/services/auth.service';
 
 export const appComponentConfig: ApplicationConfig = {
 	providers: [

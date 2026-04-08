@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Chart } from 'chart.js/auto';
-import { ThemeService } from '@app/core/services/theme.service';
+import { ThemeService } from '@app/shared/services/theme.service';
 
 @Component({
 	selector: 'app-investment-chart',

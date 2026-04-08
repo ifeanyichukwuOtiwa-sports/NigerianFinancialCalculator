@@ -44,7 +44,7 @@ Tax calculations in this project are application rules, not legal advice. If the
 ### Prerequisites
 
 - Docker and Docker Compose
-- Node.js 22+
+- Node.js 24 LTS
 - Java 25+
 
 ### Local Development With Host-Run App

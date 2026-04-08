@@ -1,8 +1,8 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavigationService } from '@app/core/services/navigation.service';
+import { NavigationService } from '@app/shared/services/navigation.service';
 import { NavbarComponent } from '@app/layout/navbar/navbar.component';
-import { AuthComponent } from '@app/features/auth/components/auth.component';
+import { AuthComponent } from '@app/features/auth/auth-components/auth.component';
 
 @Component({
 	selector: 'app-root',

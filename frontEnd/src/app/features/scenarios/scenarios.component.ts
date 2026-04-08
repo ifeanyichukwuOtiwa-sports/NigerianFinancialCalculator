@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
-import { ScenarioApiService } from './scenario-api.service';
+import { ScenarioApiService } from '@app/shared/services/scenario-api.service';
 import { ScenarioResponse } from '@app/shared/types/scenario.types';
 
 @Component({

@@ -2,8 +2,8 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
-import { AuthService } from '@app/core/services/auth.service';
-import { NavigationService } from '@app/core/services/navigation.service';
+import { AuthService } from '@app/shared/services/auth.service';
+import { NavigationService } from '@app/shared/services/navigation.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 	const authService = inject(AuthService);
