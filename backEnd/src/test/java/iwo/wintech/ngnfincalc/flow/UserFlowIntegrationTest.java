@@ -4,9 +4,12 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.testcontainers.utility.TestcontainersConfiguration;
 import tools.jackson.databind.ObjectMapper;
-import iwo.wintech.ngnfincalc.exception.ErrorCode;
+import iwo.wintech.ngnfincalc.shared.error.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -17,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestRestTemplate
 @Import(TestcontainersConfiguration.class)
 @DisplayName("Full User Lifecycle Integration Test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserFlowIntegrationTest {
 
     @Autowired
@@ -26,8 +30,9 @@ class UserFlowIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @Order(1)
     @DisplayName("User Journey: Attempt Unauthorized -> Register -> Duplicate Register Error -> Login -> Auth Failure Error -> Create Scenarios (None, WHT, Progressive) -> List -> Delete -> Logout")
-    void fullUserJourney() throws Exception {
+    void fullUserJourney() {
         String email = "user-" + System.currentTimeMillis() + "@test.com";
         new UserActionsBuilder(restTemplate, objectMapper)
                 .withBrand("NGN")
@@ -83,7 +88,15 @@ class UserFlowIntegrationTest {
                 .expectJson("{taxStrategy: 'progressive'}")
                 .verifyField("estimatedTax", node -> assertThat(node.numberValue().doubleValue()).isGreaterThan(0.0))
                 
-                .step("11. List user scenarios and verify all are present")
+                .step("11. Export scenario to PDF")
+                .exportPdf(null) // UserActionsBuilder should handle null by using lastScenarioId
+                .expectStatus(200)
+
+                .step("12. Export scenario to CSV")
+                .exportCsv(null)
+                .expectStatus(200)
+
+                .step("13. List user scenarios and verify all are present")
                 .listScenarios()
                 .expectStatus(200)
                 .expectArraySize(3)
@@ -104,5 +117,25 @@ class UserFlowIntegrationTest {
                 .step("15. Verify access is blocked again after logout")
                 .listScenarios()
                 .expectStatus(403);
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Security: Verify Rate Limiting for Auth Endpoints")
+    void testRateLimiting() {
+        String email = "rate-limit-" + System.currentTimeMillis() + "@test.com";
+        // Use a different IP for this test to avoid bucket exhaustion from first test
+        UserActionsBuilder builder = new UserActionsBuilder(restTemplate, objectMapper)
+                .withBrand("NGN")
+                .withIp("192.168.1.1");
+
+        // Use more attempts since we increased the limit
+        for (int i = 0; i < 20; i++) {
+            builder.login(email, "wrong-password").expectStatus(401);
+        }
+
+        // 21st attempt should be rate limited
+        builder.login(email, "wrong-password").expectStatus(429)
+                .expectJson("{code: 'RATE_LIMIT_EXCEEDED'}");
     }
 }

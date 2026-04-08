@@ -2,6 +2,8 @@
 
 A summary of problems encountered, solutions applied, and the reasoning behind each decision while building this project.
 
+This file mixes active implementation notes with historical context. If any entry conflicts with the current source tree, treat the code and the README files as the source of truth.
+
 ---
 
 ## 1. Angular Standalone Components (v20+)
@@ -142,12 +144,11 @@ Since no component uses `ViewEncapsulation.ShadowDom`, global classes from `styl
 
 **Problem:** Running `docker compose up` started all services (MySQL, Redis, backend, frontend) even when only the database was needed for local development.
 
-**Solution:** Added `profiles` to services — infrastructure (MySQL, Redis) has no profile (always starts), backend has `[backend, full]`, frontend has `[full]`.
+**Solution:** Added Docker Compose profiles so infrastructure starts by default and the app containers start only when the `app` profile is enabled.
 
 **Why:** Docker Compose profiles let you tag services for selective startup:
 - `docker compose up -d` → only MySQL + Redis (for local dev with IDE)
-- `docker compose --profile backend up -d` → MySQL + Redis + Backend
-- `docker compose --profile full up -d` → everything
+- `docker compose --profile app up -d` → MySQL + Redis + Backend + Frontend
 
 Services without a `profiles` key always start. This documents intended service groupings directly in the file.
 
@@ -157,7 +158,7 @@ Services without a `profiles` key always start. This documents intended service 
 
 **Problem:** Deciding between a manual `Dockerfile` and Spring Boot's built-in `bootBuildImage` (Buildpacks) for creating Docker images.
 
-**Solution:** Used `bootBuildImage` (Spring Boot Buildpacks) as the primary approach, keeping the manual Dockerfile as `Dockerfile.manual` for reference.
+**Solution:** Used `bootBuildImage` (Spring Boot Buildpacks) as the primary approach for the backend image. The frontend still uses its own Dockerfile.
 
 **Why:**
 
@@ -170,7 +171,7 @@ Services without a `profiles` key always start. This documents intended service 
 | Build cache | Manual layer caching | Automatic dependency layer caching |
 | Extra plugin needed | No | No (built into `org.springframework.boot` plugin) |
 
-Buildpacks is the officially recommended approach for Spring Boot. The tradeoff is that `docker compose up --build` can't trigger it directly — you need a separate `./gradlew bootBuildImage` step.
+Buildpacks is the officially recommended approach for Spring Boot. The tradeoff is that `docker compose up --build` can't trigger backend image creation directly — you still need a separate `./gradlew bootBuildImage` step first.
 
 ---
 
@@ -200,11 +201,11 @@ Buildpacks is the officially recommended approach for Spring Boot. The tradeoff 
 
 ## 16. Glassmorphism Modal Pattern
 
-**Reference:** The auth modal uses a "glassmorphism" design pattern:
-- **Fixed overlay** with `backdrop-filter: blur(8px)` dims and blurs the background
-- **Glass card** sits centered within the overlay
-- **Accessibility requires:** `role="dialog"`, `aria-modal="true"`, focus trapping (`cdkTrapFocus`), `Escape` key close, and focus restore to the trigger element on close
-- **Close behavior:** clicking outside the card (on the overlay) closes the modal — implemented via `(click)` on overlay with `$event.stopPropagation()` on the card
+**Reference:** The auth modal uses a glassmorphism-style presentation built on the native `<dialog>` element:
+- **Modal container** is the browser dialog itself, opened with `showModal()`
+- **Glass card** sits inside the dialog content
+- **Accessibility behaviors** include keyboard close, modal semantics from `<dialog>`, and focus restore to the trigger element on close
+- **Close behavior:** clicking the backdrop closes the dialog when the click target is the dialog itself
 
 ---
 
@@ -213,11 +214,11 @@ Buildpacks is the officially recommended approach for Spring Boot. The tradeoff 
 **Problem:** The auth modal lacked focus trapping (Tab key could escape), keyboard close (Escape), and focus restoration.
 
 **Solution:**
-- Installed `@angular/cdk` for `cdkTrapFocus` and `cdkTrapFocusAutoCapture` directives
-- Added `(keydown.escape)="close()"` on the overlay
+- Used the native `<dialog>` element with `showModal()`
+- Added `(keydown.escape)="close()"` on the dialog
 - Captured `document.activeElement` on modal open, restored focus to it on close
 
-**Why:** WCAG AA compliance requires that modal dialogs trap focus within them (users can't Tab to elements behind the overlay), support keyboard dismissal, and return focus to the trigger element when closed. Without these, keyboard and screen reader users can't effectively use the modal.
+**Why:** Modal dialogs must support keyboard dismissal and sensible focus management. Using the native dialog element reduces custom focus-management work while still requiring explicit focus restoration and validation messaging.
 
 ---
 

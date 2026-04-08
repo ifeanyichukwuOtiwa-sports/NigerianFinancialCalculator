@@ -1,9 +1,10 @@
 package iwo.wintech.ngnfincalc.flow;
 
-import iwo.wintech.ngnfincalc.dto.LoginRequest;
-import iwo.wintech.ngnfincalc.dto.RegisterRequest;
-import iwo.wintech.ngnfincalc.dto.ScenarioRequest;
-import iwo.wintech.ngnfincalc.dto.ScenarioResponse;
+import iwo.wintech.ngnfincalc.auth.dto.LoginRequest;
+import iwo.wintech.ngnfincalc.auth.dto.RegisterRequest;
+import iwo.wintech.ngnfincalc.scenarios.dto.ScenarioRequest;
+import iwo.wintech.ngnfincalc.scenarios.dto.ScenarioResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -28,9 +29,10 @@ public class UserActionsBuilder {
     private final ObjectMapper objectMapper;
     private final TestRestTemplate restTemplate;
     private String brand;
+    private String clientIp;
     private final List<String> cookies = new ArrayList<>();
     private ResponseEntity<String> lastResponse;
-    private Long lastScenarioId;
+    @Getter private Long lastScenarioId;
     private static final String APP_BRAND_HEADER = "x-app-brand";
 
     public UserActionsBuilder(final TestRestTemplate restTemplate, final ObjectMapper objectMapper) {
@@ -43,6 +45,11 @@ public class UserActionsBuilder {
         return this;
     }
 
+    public UserActionsBuilder withIp(final String ip) {
+        this.clientIp = ip;
+        return this;
+    }
+
     public UserActionsBuilder step(String description) {
         log.info("[TEST STEP] {}", description);
         return this;
@@ -51,6 +58,9 @@ public class UserActionsBuilder {
     private HttpHeaders createHeaders() {
         final HttpHeaders headers = new HttpHeaders();
         headers.set(APP_BRAND_HEADER, brand);
+        if (clientIp != null) {
+            headers.set("X-Forwarded-For", clientIp);
+        }
         if (!cookies.isEmpty()) {
             // Send captured cookies back
             for (final String cookie : cookies) {
@@ -74,8 +84,7 @@ public class UserActionsBuilder {
 
     public UserActionsBuilder login(final String email, final String password) {
         final LoginRequest request = new LoginRequest(email, password);
-        final HttpHeaders headers = new HttpHeaders();
-        headers.set(APP_BRAND_HEADER, brand);
+        final HttpHeaders headers = createHeaders();
         // Do NOT send session cookie for login - we want a fresh authentication
         lastResponse = restTemplate.exchange(
                 "/api/auth/login",
@@ -153,6 +162,28 @@ public class UserActionsBuilder {
         lastResponse = restTemplate.exchange(
                 "/api/scenarios/" + lastScenarioId,
                 HttpMethod.DELETE,
+                new HttpEntity<>(null, createHeaders()),
+                String.class
+        );
+        return this;
+    }
+
+    public UserActionsBuilder exportPdf(final Long id) {
+        final Long scenarioId = id != null ? id : lastScenarioId;
+        lastResponse = restTemplate.exchange(
+                "/api/scenarios/" + scenarioId + "/export/pdf",
+                HttpMethod.GET,
+                new HttpEntity<>(null, createHeaders()),
+                String.class
+        );
+        return this;
+    }
+
+    public UserActionsBuilder exportCsv(final Long id) {
+        final Long scenarioId = id != null ? id : lastScenarioId;
+        lastResponse = restTemplate.exchange(
+                "/api/scenarios/" + scenarioId + "/export/csv",
+                HttpMethod.GET,
                 new HttpEntity<>(null, createHeaders()),
                 String.class
         );

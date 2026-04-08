@@ -65,3 +65,16 @@ databaseChangeLog:
                   JSON_OBJECT('upperLimit', NULL, 'rate', 0.2500)
                 )
               ));
+
+  - changeSet:
+      id: 20260407-004
+      author: ifeanyichukwu.otiwa
+      changes:
+        - createIndex:
+            tableName: investment_scenarios
+            indexName: idx_investment_scenarios_brand_user_id
+            columns:
+              - column:
+                  name: brand
+              - column:
+                  name: user_id

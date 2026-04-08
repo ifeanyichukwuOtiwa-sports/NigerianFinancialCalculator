@@ -1,44 +1,69 @@
 spring:
   application:
-    name: backEnd
-  
+    name: ngn-financial-calculator-backend
+  profiles:
+    default: local
+
   datasource:
-    url: jdbc:mysql://localhost:6033/ngn_calc?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: root
-    password: 123456
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     enabled: true
 
   session:
-    store-type: redis # Requirement mentioned Redis in build.gradle
+    store-type: redis
     redis:
       namespace: spring:session:ngn_calc
 
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
+  shutdown: graceful
   servlet:
     session:
       cookie:
         http-only: true
-        same-site: lax
-        secure: false # Set to true in production with HTTPS
+        same-site: ${SESSION_COOKIE_SAME_SITE:lax}
+        secure: ${SESSION_COOKIE_SECURE:true}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
 cors:
   config:
-    allowed-origins:
-      - "http://localhost:4200"
-    allowed-methods:
-      - GET
-      - POST
-      - PUT
-      - DELETE
-    allowed-headers:
-      - authorization
-      - content-type
-      - x-auth-token
-      - x-app-brand
-    exposed-headers:
-      - x-auth-token
-    allow-credentials: true
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}
+    allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE}
+    allowed-headers: ${CORS_ALLOWED_HEADERS:authorization,content-type,x-auth-token,x-app-brand}
+    exposed-headers: ${CORS_EXPOSED_HEADERS:x-auth-token}
+    allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
+
+rate:
+  limiting:
+    capacity: ${RATE_LIMIT_CAPACITY:20}
+    refillInterval: ${RATE_LIMIT_REFILL_INTERVAL:PT1M}
+    refillTokens: ${RATE_LIMIT_REFILL_TOKENS:20}

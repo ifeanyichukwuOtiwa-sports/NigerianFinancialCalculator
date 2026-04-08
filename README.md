@@ -1,94 +1,133 @@
 # Nigerian Financial Calculator
 
-A full-stack financial planning tool optimized for Nigerian investors, covering compound interest, Personal Income Tax (PIT) estimation (Nigeria 2026 rules), and scenario management.
+A full-stack financial calculator for Nigerian users. The repository contains an Angular frontend, a Spring Boot backend, and local infrastructure for MySQL and Redis.
 
-## Tech Stack
+## What It Does
+
+- Compound-interest projections with recurring contributions
+- Personal income tax estimation using the app's 2026 Nigeria tax-band configuration
+- Session-based authentication
+- Saved scenarios with PDF and CSV export
+- Side-by-side scenario comparison
+
+Tax calculations in this project are application rules, not legal advice. If the tax policy changes, update the configured bands and supporting docs together.
+
+## Stack
 
 ### Frontend
-- **Framework**: Angular 21 (v21.2.x)
-- **Features**: Signals-based state, Standalone components, `inject()` pattern, SCSS (Glassmorphism UI), Chart.js
-- **Testing**: Vitest (skipping frontend unit tests per requirements)
-- **Linting**: ESLint with `@angular-eslint` (AXE & Accessibility compliant)
+- Angular 21
+- Signals and standalone components
+- Angular Router with lazy-loaded pages
+- Chart.js
+- ESLint with Angular template accessibility rules
 
 ### Backend
-- **Framework**: Spring Boot 4 (v4.0.5)
-- **Language**: Java 25
-- **Security**: Session-based auth with Spring Security + Redis
-- **Database**: MySQL 8.4 (Migrations via Liquibase)
-- **Testing**: JUnit 5, Testcontainers (MySQL + Redis), AssertJ, JSONAssert
-- **Multi-tenancy**: Brand isolation via `X-App-Brand` header
+- Spring Boot 4.0.5
+- Java 25 toolchain
+- Spring Security with server-side sessions
+- Redis-backed session storage
+- MySQL 8.4 with Liquibase migrations
+- JUnit 5 and Testcontainers
 
-### DevOps
-- **Containerization**: Docker & Docker Compose
-- **Build**: Spring Boot Buildpacks (Paketo)
-- **CI/CD**: GitHub Actions (Workflows for Frontend & Backend)
+### Local Infrastructure
+- Docker Compose
+- Spring Boot Buildpacks for the backend container image
 
----
+## Repository Docs
+
+- [`frontEnd/README.md`](./frontEnd/README.md): frontend setup and architecture
+- [`backEnd/README.md`](./backEnd/README.md): backend setup, runtime model, API surface, and feature-first package layout
+- [`doc/learning_guides.md`](./doc/learning_guides.md): implementation notes and project decisions
 
 ## Quick Start
 
 ### Prerequisites
-- Docker & Docker Compose
+
+- Docker and Docker Compose
 - Node.js 22+
 - Java 25+
 
-### 1. Infrastructure (MySQL + Redis)
+### Local Development With Host-Run App
+
+1. Start infrastructure only:
 ```bash
 docker compose up -d
 ```
 
-### 2. Backend
+2. Start the backend:
 ```bash
 cd backEnd
 ./gradlew bootRun
 ```
-API available at `http://localhost:8080`.
 
-### 3. Frontend
+3. Start the frontend:
 ```bash
 cd frontEnd
 npm install
-npx ng serve
+npm start
 ```
-Application available at `http://localhost:4200` (proxied to backend).
 
----
+Local endpoints:
 
-## Features & UI
-- **Auth Flow**: Secure registration and session-based login.
-- **Investment Calculator**: Compound interest with monthly contributions and tax strategies.
-- **Tax Calculator**: Nigeria 2026 PIT tax bands (Progressive) with gross-to-net and net-to-gross modes.
-- **Scenario Management**: Save, list, and compare different investment plans.
-- **Themes**: System-aware light/dark themes with time-based intensity.
+- Frontend: `http://localhost:4200`
+- Backend API: `http://localhost:8080`
+- MySQL: `localhost:6033`
+- Redis: `localhost:6380`
 
----
+The frontend dev server proxies `/api` requests to the backend.
+
+### Dockerized App Run
+
+Build the backend image first:
+
+```bash
+cd backEnd
+./gradlew bootBuildImage
+```
+
+Then start the app profile:
+
+```bash
+docker compose --profile app up --build
+```
+
+`docker compose up -d` starts only MySQL and Redis. `--profile app` adds the backend and frontend containers.
 
 ## Development
 
-### Running Tests (Backend)
+### Backend tests
 ```bash
 cd backEnd
 ./gradlew test
 ```
-Integration tests use **Testcontainers** to spin up real MySQL and Redis instances.
 
-### Generating Coverage Report
+### Backend coverage
 ```bash
 cd backEnd
 ./gradlew jacocoTestReport
 ```
-Report available at `backEnd/build/reports/jacoco/test/html/index.html`.
 
-### Linting (Frontend)
+Coverage report:
+`backEnd/build/reports/jacoco/test/html/index.html`
+
+### Frontend lint
 ```bash
 cd frontEnd
-npx ng lint
+npm run lint
 ```
 
----
+### Frontend test
+```bash
+cd frontEnd
+npm test
+```
 
-## Deployment
-Recommended stack:
-- **Render**: Frontend (Static Site) & Backend (Web Service)
-- **Aiven**: MySQL 8.4
-- **Upstash**: Redis 7
+## Deployment Notes
+
+The checked-in configuration is optimized for local development. Production deployment should externalize:
+
+- datasource credentials
+- Redis connection settings
+- allowed CORS origins
+- secure cookie settings
+- container image publishing and runtime configuration
