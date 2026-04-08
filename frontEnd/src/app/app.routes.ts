@@ -1,26 +1,27 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const appRoutes: Routes = [
 	{
 		path: '',
-		loadComponent: () => import('@app/pages/landing-component/landing.component').then((m) => m.LandingComponent),
+		loadChildren: () =>
+			import('./features/landing/landing.routes').then((m) => m.landingRoutes),
 	},
 	{
 		path: 'calculator',
-		loadComponent: () =>
-			import('@app/pages/calculator-component/calculator.component').then((m) => m.CalculatorComponent),
+		loadChildren: () =>
+			import('./features/investment/investment.routes').then((m) => m.investmentRoutes),
 		canActivate: [authGuard],
 	},
 	{
 		path: 'tax',
-		loadComponent: () => import('./pages/tax/tax.page').then((m) => m.TaxPage),
+		loadChildren: () => import('./features/tax/tax.routes').then((m) => m.taxRoutes),
 		canActivate: [authGuard],
 	},
 	{
 		path: 'scenarios',
-		loadComponent: () =>
-			import('@app/pages/scenarios-component/scenarios.component').then((m) => m.ScenariosComponent),
+		loadChildren: () =>
+			import('./features/scenarios/scenarios.routes').then((m) => m.scenariosRoutes),
 		canActivate: [authGuard],
 	},
 	{

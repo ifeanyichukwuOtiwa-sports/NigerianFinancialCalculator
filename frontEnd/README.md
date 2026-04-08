@@ -1,6 +1,6 @@
 # Nigerian Financial Calculator
 
-A modern, high-performance financial application built with Angular 21 designed specifically for the Nigerian market. This tool helps users plan their long-term wealth growth and understand their take-home income under the latest Nigerian tax regulations.
+A modern Angular 21 frontend for the Nigerian Financial Calculator. It provides investment projection, tax estimation, authentication, and saved-scenario workflows for the backend API in this repository.
 
 ![Project Overview](ci.png)
 
@@ -15,7 +15,7 @@ A modern, high-performance financial application built with Angular 21 designed 
 *   **Large Range Support**: Plan for the future with initial investments up to ₦1,000,000.
 
 ### 2. Nigeria Tax Calculator (2026 Rules)
-*   **Latest Tax Bands**: Fully compliant with the **Nigeria Tax Act 2025** (effective January 1, 2026).
+*   **Configured Tax Bands**: Uses the repository's current 2026 Nigeria tax-band configuration.
 *   **Progressive PIT**: Calculates Personal Income Tax based on the updated step-function bands (₦800k exempt, then 15%, 18%, etc.).
 *   **Two-Way Calculation**:
     *   **Income to Tax**: Enter your gross wage to see your net take-home and estimated tax.
@@ -35,20 +35,32 @@ A modern, high-performance financial application built with Angular 21 designed 
 *   **Visualization**: [Chart.js](https://www.chartjs.org/) for high-performance interactive graphing.
 *   **Styling**: SCSS with CSS variable tokens for unified theme management.
 *   **Build Tool**: Angular CLI / Vite.
+*   **Testing**: `ng test` via Angular's unit-test builder.
 
 ## 🏗️ Architecture & Design
 
-The application follows a clean, modular architecture optimized for maintainability:
-*   **Smart/Dumb Component Pattern**: `AppComponent` orchestrates global state, while specialized sub-components handle presentational logic.
-*   **Centralized Configuration**: All business rules (tax bands, default values, compounding frequencies) are stored in `src/app/app.constants.ts`.
-*   **Pure Functional Logic**: All mathematical formulas (financial and tax) are isolated in `src/app/app.utils.ts` for portability and testing.
-*   **Layout Separation**: Core layout elements like the `NavbarComponent` are decoupled from functional logic and reside in `src/app/layout/`.
-*   **Reactive Navigation**: Decoupled tab management using `NavigationService`.
+The application follows a modern, modular architecture organized by feature and responsibility, optimized for scalability and performance:
+
+### 📁 Directory Structure
+*   **`src/app/core/`**: Singleton services (`Auth`, `Navigation`, `Theme`), global interceptors, and route guards. This is the "brain" of the app.
+*   **`src/app/shared/`**: Reusable UI components, pipes, constants, and pure utility functions used across multiple features.
+*   **`src/app/features/`**: Logical modules organized by business domain. Each feature encapsulates its own components, local services, and routing:
+    *   `investment/`: Compound interest calculator and interactive charts.
+    *   `tax/`: Nigeria 2026 Personal Income Tax tools.
+    *   `scenarios/`: User-saved scenario management and exports.
+    *   `auth/`: Login and registration flows.
+*   **`src/app/layout/`**: Global layout components like the `Navbar`.
+
+### 🚀 Key Patterns
+*   **Route-Based Lazy Loading**: Each feature in the `features/` directory is lazy-loaded via the Angular Router, ensuring users only download the code they need for the current view.
+*   **Signal-First State**: Fully reactive state management using Angular Signals (`signal`, `computed`, `effect`) for predictable data flow.
+*   **Pure Functional Logic**: All mathematical formulas (financial and tax) are isolated in `shared/utils/` for absolute portability and ease of testing.
+*   **OnPush Strategy**: Optimized change detection across all components for maximum performance.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-*   Node.js (v21+ recommended)
+*   Node.js 22+
 *   npm
 
 ### Installation
@@ -65,6 +77,8 @@ npm start
 ```
 Navigate to `http://localhost:4200/`. The app will automatically reload on source changes.
 
+For API-backed development, start the backend separately from the repository root docs or [`backEnd/README.md`](../backEnd/README.md). The dev server proxies `/api` requests to `http://localhost:8080`.
+
 ### Building for Production
 To build the project:
 ```bash
@@ -72,9 +86,19 @@ npm run build
 ```
 The build artifacts will be stored in the `dist/` directory.
 
+### Linting
+```bash
+npm run lint
+```
+
+### Tests
+```bash
+npm test
+```
+
 ## 📊 Business Rules (Nigeria Tax Act 2026)
 
-The app implements the following progressive tax bands:
+The app currently implements the following progressive tax bands from its checked-in configuration:
 
 | Annual Income Band | Tax Rate |
 |-------------------|----------|

@@ -46,7 +46,8 @@ nav {
 	padding: 3px;
 	gap: 2px;
 
-	button, a {
+	button,
+	a {
 		padding: 6px 14px;
 		font-size: 13px;
 		font-weight: 700;
@@ -93,7 +94,8 @@ nav {
 		font-size: 1.1rem;
 	}
 
-	.toggle-group button, .toggle-group a {
+	.toggle-group button,
+	.toggle-group a {
 		padding: 5px 10px;
 		font-size: 12px;
 	}

@@ -20,9 +20,14 @@
 			</div>
 		}
 		<div class="theme-controls toggle-group">
-			<button [class.active]="theme() === 'light'" (click)="setTheme('light')" aria-label="Day Mode">☀️ Day</button>
-			<button [class.active]="theme() === 'dark'" (click)="setTheme('dark')" aria-label="Night Mode">🌙 Night</button>
-			<button [class.active]="theme() === 'system'" (click)="setTheme('system')" aria-label="System Mode">🖥️ System
+			<button type="button" [class.active]="theme() === 'light'" (click)="setTheme('light')">
+				☀️ Day
+			</button>
+			<button type="button" [class.active]="theme() === 'dark'" (click)="setTheme('dark')">
+				🌙 Night
+			</button>
+			<button type="button" [class.active]="theme() === 'system'" (click)="setTheme('system')">
+				🖥️ System
 			</button>
 		</div>
 	</div>

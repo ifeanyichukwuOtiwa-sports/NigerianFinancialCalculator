@@ -1,0 +1,235 @@
+<section class="scenarios-section">
+	<div class="scenarios-header">
+		<h2>My Saved Scenarios</h2>
+		<div class="header-actions">
+			@if (selectedIds().size >= 2) {
+				<button class="btn-primary" (click)="compare()" aria-label="Compare selected scenarios">
+					Compare ({{ selectedIds().size }})
+				</button>
+			}
+			<button class="btn-secondary" (click)="refresh()" [disabled]="loading()" aria-label=" ↻ Refresh">
+				↻ Refresh
+			</button>
+		</div>
+	</div>
+	@if (errorMessage()) {
+		<div class="message-error" role="alert">{{ errorMessage() }}</div>
+	}
+	@if (loading()) {
+		<p class="loading-text">Loading scenarios…</p>
+	} @else if (scenarios().length === 0) {
+		<div class="empty-state glass-card">
+			<p>No saved scenarios yet. Use the "Save Scenario" button to save your first one.</p>
+		</div>
+	} @else {
+		<!-- Investment Plans Section -->
+		@if (investmentScenarios().length > 0) {
+			<div class="scenario-group">
+				<h3 class="group-title">Investment Plans</h3>
+				<ul class="scenario-list">
+					@for (scenario of investmentScenarios(); track scenario.id) {
+						<li class="scenario-item glass-card" [class.selected]="selectedIds().has(scenario.id)">
+							<div class="selection-box">
+								<input
+									type="checkbox"
+									[checked]="selectedIds().has(scenario.id)"
+									(change)="toggleSelection(scenario.id)"
+									[attr.aria-label]="'Select ' + scenario.name"
+								/>
+							</div>
+							<div class="scenario-info">
+								<span class="scenario-name">{{ scenario.name }}</span>
+								<span class="scenario-detail">
+									Principal: {{ scenario.principal | currency: 'NGN' : '₦' : '1.0-0' }} · Rate:
+									{{ scenario.annualRate }}% · {{ scenario.years }} yrs
+								</span>
+								<span class="scenario-result">
+									Balance: {{ scenario.totalBalance | currency: 'NGN' : '₦' : '1.0-0' }}
+								</span>
+							</div>
+							<div class="scenario-actions">
+								<button
+									class="btn-secondary btn-sm"
+									(click)="onExportPdf(scenario)"
+									aria-label="Export PDF"
+								>
+									PDF
+								</button>
+								<button
+									class="btn-secondary btn-sm"
+									(click)="onExportCsv(scenario)"
+									aria-label="Export CSV"
+								>
+									CSV
+								</button>
+								<button
+									class="btn-primary"
+									(click)="onLoad(scenario)"
+									aria-label="Load scenario {{ scenario.name }}"
+								>
+									Load
+								</button>
+								<button
+									class="btn-danger"
+									(click)="onDelete(scenario)"
+									aria-label="Delete scenario {{ scenario.name }}"
+								>
+									Delete
+								</button>
+							</div>
+						</li>
+					}
+				</ul>
+			</div>
+		}
+
+		<!-- Tax Plans Section -->
+		@if (taxScenarios().length > 0) {
+			<div class="scenario-group">
+				<h3 class="group-title">Tax Plans</h3>
+				<ul class="scenario-list">
+					@for (scenario of taxScenarios(); track scenario.id) {
+						<li class="scenario-item glass-card" [class.selected]="selectedIds().has(scenario.id)">
+							<div class="selection-box">
+								<input
+									type="checkbox"
+									[checked]="selectedIds().has(scenario.id)"
+									(change)="toggleSelection(scenario.id)"
+									[attr.aria-label]="'Select ' + scenario.name"
+								/>
+							</div>
+							<div class="scenario-info">
+								<span class="scenario-name">{{ scenario.name }}</span>
+								<span class="scenario-detail">
+									Annual Gross: {{ scenario.annualIncome | currency: 'NGN' : '₦' : '1.0-0' }}
+								</span>
+								<span class="scenario-result">
+									Est. Tax: {{ scenario.estimatedTax | currency: 'NGN' : '₦' : '1.0-0' }}
+								</span>
+							</div>
+							<div class="scenario-actions">
+								<button
+									class="btn-secondary btn-sm"
+									(click)="onExportPdf(scenario)"
+									aria-label="Export PDF"
+								>
+									PDF
+								</button>
+								<button
+									class="btn-secondary btn-sm"
+									(click)="onExportCsv(scenario)"
+									aria-label="Export CSV"
+								>
+									CSV
+								</button>
+								<button
+									class="btn-primary"
+									(click)="onLoad(scenario)"
+									aria-label="Load scenario {{ scenario.name }}"
+								>
+									Load
+								</button>
+								<button
+									class="btn-danger"
+									(click)="onDelete(scenario)"
+									aria-label="Delete scenario {{ scenario.name }}"
+								>
+									Delete
+								</button>
+							</div>
+						</li>
+					}
+				</ul>
+			</div>
+		}
+
+		@if (showComparison()) {
+			<div class="modal-overlay comparison-overlay" (click)="showComparison.set(false)" role="presentation">
+				<dialog
+					open
+					class="comparison-modal glass-card"
+					tabindex="-1"
+					(click)="$event.stopPropagation()"
+					aria-labelledby="comp-title"
+					aria-modal="true"
+					(keydown.escape)="showComparison.set(false)"
+				>
+					<div class="modal-header">
+						<h3 id="comp-title">Scenario Comparison</h3>
+						<button class="btn-close" (click)="showComparison.set(false)" aria-label="Close Comparison">
+							×
+						</button>
+					</div>
+					<div class="comparison-table-wrapper">
+						<table class="comparison-table">
+							<thead>
+								<tr>
+									<th>Field</th>
+									@for (s of selectedScenarios(); track s.id) {
+										<th>{{ s.name }}</th>
+									}
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Principal</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.principal | currency: 'NGN' : '₦' : '1.0-0' }}</td>
+									}
+								</tr>
+								<tr>
+									<td>Rate</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.annualRate }}%</td>
+									}
+								</tr>
+								<tr>
+									<td>Years</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.years }}</td>
+									}
+								</tr>
+								<tr>
+									<td>Monthly Contrib.</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.monthlyContribution | currency: 'NGN' : '₦' : '1.0-0' }}</td>
+									}
+								</tr>
+								<tr>
+									<td>Compounding</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.compoundingFrequency }}</td>
+									}
+								</tr>
+								<tr>
+									<td>Tax Strategy</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.taxStrategy }}</td>
+									}
+								</tr>
+								<tr class="highlight">
+									<td>Total Interest</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.totalInterest | currency: 'NGN' : '₦' : '1.0-0' }}</td>
+									}
+								</tr>
+								<tr class="highlight">
+									<td>Estimated Tax</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.estimatedTax | currency: 'NGN' : '₦' : '1.0-0' }}</td>
+									}
+								</tr>
+								<tr class="highlight-final">
+									<td>Final Balance</td>
+									@for (s of selectedScenarios(); track s.id) {
+										<td>{{ s.totalBalance | currency: 'NGN' : '₦' : '1.0-0' }}</td>
+									}
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</dialog>
+			</div>
+		}
+	}
+</section>

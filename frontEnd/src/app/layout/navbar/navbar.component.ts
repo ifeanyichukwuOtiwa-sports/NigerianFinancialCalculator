@@ -1,17 +1,17 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { ThemeService } from '@app/services/theme.service';
-import { NavigationService } from '@app/services/navigation.service';
-import { AuthService } from '@app/services/auth.service';
-import * as Const from '../../app.constants';
-import { Theme } from '@app/types/theme.types';
+import { ThemeService } from '@app/core/services/theme.service';
+import { NavigationService } from '@app/core/services/navigation.service';
+import { AuthService } from '@app/core/services/auth.service';
+import * as Const from '@app/shared/utils/app.constants';
+import { Theme } from '@app/shared/types/theme.types';
 
 @Component({
 	selector: 'app-navbar',
 	imports: [RouterLink, RouterLinkActive],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	templateUrl: './navbar.component.html',
-	styleUrl: './navbar.component.scss'
+	styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
 	private readonly themeService = inject(ThemeService);

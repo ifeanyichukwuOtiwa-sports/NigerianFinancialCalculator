@@ -1,0 +1,21 @@
+<app-investment-form
+	[(principal)]="principal"
+	[(rate)]="rate"
+	[(years)]="years"
+	[(monthly)]="monthly"
+	[(frequency)]="frequency"
+	[saving]="scenarioSaving()"
+	[saveMessage]="scenarioMessage()"
+	(saveScenario)="saveScenario($event)"
+/>
+<app-summary-metrics [totalInvested]="totalInvested()" [interestEarned]="interestEarned()" [balance]="balance()" />
+@if (selectedYearData()) {
+	<app-year-breakdown [data]="selectedYearData()!" (dismiss)="selectedYear.set(null)" />
+}
+<app-milestones [milestones]="milestones()" (selectYear)="selectedYear.set($event)" />
+<app-investment-chart
+	[labels]="chartLabels()"
+	[investedData]="investedData()"
+	[interestData]="interestData()"
+	(yearSelected)="selectedYear.set($event)"
+/>

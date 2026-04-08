@@ -13,12 +13,13 @@ A modern Angular-based financial application designed for the Nigerian market. I
 -   **Build Tool**: Angular CLI / Vite.
 
 ## 3. Architecture & Design Patterns
-The application follows a modular, decoupled architecture:
--   **Smart/Dumb Component Pattern**: `AppComponent` acts as the orchestrator (Smart), while sub-components in `src/app/components/` handle presentation (Dumb).
--   **Centralized Configuration**: All business rules (tax bands, default values, compounding frequencies) are stored in `src/app/app.constants.ts`.
--   **Pure Functional Logic**: All mathematical formulas are isolated in `src/app/app.utils.ts` for testability and portability.
--   **Layout Separation**: Core layout elements like the `NavbarComponent` are decoupled from functional components and reside in `src/app/layout/`.
--   **Reactive Navigation**: Tab state is managed by `NavigationService`, allowing components to react to navigation changes without complex input/output chains.
+The application follows a **Modular Feature-Based Architecture**:
+-   **Feature-Encapsulated Modules**: Each major tool (Investment, Tax, Scenarios) is isolated in its own `features/` directory, containing its specific components, services, and routing.
+-   **Core/Shared Separation**: Global singletons and infrastructure (interceptors, guards) reside in `core/`, while reusable UI components and utilities are in `shared/`.
+-   **Route-Based Lazy Loading**: Implements code-splitting at the route level to minimize initial bundle size and improve load times.
+-   **Functional Dependency Injection**: Exclusively uses the `inject()` function for a cleaner, more modern DI pattern.
+-   **Pure Functional Logic**: All mathematical formulas are isolated in `src/app/shared/utils/app.utils.ts` for testability and portability.
+-   **OnPush Reactivity**: Components are optimized with `ChangeDetectionStrategy.OnPush` and leverage **Angular Signals** for fine-grained DOM updates.
 
 ## 4. Key Business Logic
 ### Financial Formulas
@@ -55,6 +56,8 @@ The tax is calculated by splitting the annual income (or interest) into specific
 **Tax to Income (Reverse Extrapolation):**
 Calculates the required Gross Income to pay a specific target Net Tax by iteratively reversing the bands above, correctly identifying the **₦800,000** tax-free threshold.
 
+These tax rules are application configuration, not legal advice. Keep the docs and constants aligned when the policy model changes.
+
 ### Theme & Intensity System
 Managed by `ThemeService`, the app features a dual-layer theme:
 1.  **Visual Mode**: 3-way toggle (Light, Dark, System).
@@ -67,19 +70,22 @@ Managed by `ThemeService`, the app features a dual-layer theme:
 ## 5. Directory Structure
 ```text
 src/app/
-├── components/         # Presentational (Dumb) components
-├── layout/             # Shell/Layout components (Navbar)
-├── services/           # State & Logic services (Theme, Navigation)
-├── app.constants.ts    # Single source of truth for business rules (Bands, Max Limits)
-├── app.types.ts        # Shared TypeScript interfaces
-└── app.utils.ts        # Pure mathematical functions
+├── core/               # Global singletons (Auth, Nav, Theme), Guards, Interceptors
+├── shared/             # Reusable UI, Pipes, Constants, Types, Utils
+├── features/           # Lazy-loaded business modules
+│   ├── auth/           # Login/Register components
+│   ├── investment/     # Calculator, Charts, Milestones
+│   ├── tax/            # PIT Calculator, Breakdown tables
+│   └── scenarios/      # Saved scenarios, PDF/CSV exports
+├── layout/             # App shell (Navbar)
+└── app.routes.ts       # Main router with lazy children
 ```
 
 ## 6. How to Extend
--   **Add New Tax Rules**: Update `NIGERIA_PIT_BANDS_2026` in `app.constants.ts`.
--   **New Financial Instrument**: Add a strategy to `TaxStrategy` type and update `calculateFutureBalance` in `app.utils.ts`.
--   **UI Changes**: All colors are controlled via CSS variables in `src/styles.scss`. Update the `:root` tokens to change the entire app's look.
--   **Adjust Range Limits**: Modify `MAX_PRINCIPAL` or `MAX_ANNUAL_INCOME` in `app.constants.ts`.
+-   **Add a New Feature**: Create a new folder in `src/app/features/`, define its routes in `feature.routes.ts`, and register it in the main `app.routes.ts` using `loadChildren`.
+-   **Update Tax Rules**: Modify `NIGERIA_PIT_BANDS_2026` in `src/app/shared/utils/app.constants.ts`.
+-   **Add a Reusable Component**: Place it in `src/app/shared/components/`.
+-   **Adjust Global Styles**: Update CSS variable tokens in `src/styles.scss`.
 
 ## 7. Performance & Optimization
 -   **No-SSR Implementation**: The app is built as a standard SPA to avoid hydration race conditions with Chart.js.

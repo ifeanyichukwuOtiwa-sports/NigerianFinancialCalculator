@@ -1,0 +1,177 @@
+<dialog
+	class="auth-dialog"
+	#authDialog
+	tabindex="-1"
+	(close)="onDialogClose()"
+	(click)="onOverlayClick($event)"
+	(keydown.escape)="close()"
+	aria-label="Authentication"
+>
+	<div class="auth-card glass-card">
+		<button class="btn-icon-close" (click)="close()" aria-label="Close" type="button">&times;</button>
+		<h2 class="auth-title gradient-text">Welcome</h2>
+		<div class="tabs toggle-group">
+			<button [class.active]="activeTab() === 'login'" (click)="switchTab('login')" type="button">Login</button>
+			<button [class.active]="activeTab() === 'register'" (click)="switchTab('register')" type="button">
+				Register
+			</button>
+		</div>
+		@if (successMessage()) {
+			<output class="message-success">{{ successMessage() }}</output>
+		}
+		@if (errorMessage()) {
+			<output class="message-error" role="alert">{{ errorMessage() }}</output>
+		}
+		@if (activeTab() === 'login') {
+			<form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+				<div class="form-field">
+					<label for="login-email">Email</label>
+					<input
+						id="login-email"
+						type="email"
+						formControlName="email"
+						autocomplete="email"
+						placeholder="you@example.com"
+						[class.input-invalid]="loginForm.controls.email.touched && loginForm.controls.email.invalid"
+						[attr.aria-invalid]="loginForm.controls.email.touched && loginForm.controls.email.invalid"
+						[attr.aria-describedby]="
+							loginForm.controls.email.touched && loginForm.controls.email.invalid
+								? 'login-email-error'
+								: null
+						"
+					/>
+					@if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+						<span class="field-error" id="login-email-error" role="alert">
+							@if (loginForm.controls.email.errors?.['required']) {
+								Email is required.
+							} @else if (loginForm.controls.email.errors?.['email']) {
+								Please enter a valid email address.
+							}
+						</span>
+					}
+				</div>
+				<div class="form-field">
+					<label for="login-password">Password</label>
+					<input
+						id="login-password"
+						type="password"
+						formControlName="password"
+						autocomplete="current-password"
+						placeholder="Enter your password"
+						[class.input-invalid]="
+							loginForm.controls.password.touched && loginForm.controls.password.invalid
+						"
+						[attr.aria-invalid]="loginForm.controls.password.touched && loginForm.controls.password.invalid"
+						[attr.aria-describedby]="
+							loginForm.controls.password.touched && loginForm.controls.password.invalid
+								? 'login-password-error'
+								: null
+						"
+					/>
+					@if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+						<span class="field-error" id="login-password-error" role="alert"> Password is required. </span>
+					}
+				</div>
+				<button type="submit" class="btn-primary btn-full" [disabled]="loading()">
+					@if (loading()) {
+						Logging in…
+					} @else {
+						Login
+					}
+				</button>
+			</form>
+		} @else {
+			<form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form">
+				<div class="form-field">
+					<label for="register-name">Full Name</label>
+					<input
+						id="register-name"
+						type="text"
+						formControlName="fullName"
+						autocomplete="name"
+						placeholder="John Doe"
+						[class.input-invalid]="
+							registerForm.controls.fullName.touched && registerForm.controls.fullName.invalid
+						"
+						[attr.aria-invalid]="
+							registerForm.controls.fullName.touched && registerForm.controls.fullName.invalid
+						"
+						[attr.aria-describedby]="
+							registerForm.controls.fullName.touched && registerForm.controls.fullName.invalid
+								? 'register-name-error'
+								: null
+						"
+					/>
+					@if (registerForm.controls.fullName.touched && registerForm.controls.fullName.invalid) {
+						<span class="field-error" id="register-name-error" role="alert"> Full name is required. </span>
+					}
+				</div>
+				<div class="form-field">
+					<label for="register-email">Email</label>
+					<input
+						id="register-email"
+						type="email"
+						formControlName="email"
+						autocomplete="email"
+						placeholder="you@example.com"
+						[class.input-invalid]="
+							registerForm.controls.email.touched && registerForm.controls.email.invalid
+						"
+						[attr.aria-invalid]="registerForm.controls.email.touched && registerForm.controls.email.invalid"
+						[attr.aria-describedby]="
+							registerForm.controls.email.touched && registerForm.controls.email.invalid
+								? 'register-email-error'
+								: null
+						"
+					/>
+					@if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+						<span class="field-error" id="register-email-error" role="alert">
+							@if (registerForm.controls.email.errors?.['required']) {
+								Email is required.
+							} @else if (registerForm.controls.email.errors?.['email']) {
+								Please enter a valid email address.
+							}
+						</span>
+					}
+				</div>
+				<div class="form-field">
+					<label for="register-password">Password</label>
+					<input
+						id="register-password"
+						type="password"
+						formControlName="password"
+						autocomplete="new-password"
+						placeholder="At least 6 characters"
+						[class.input-invalid]="
+							registerForm.controls.password.touched && registerForm.controls.password.invalid
+						"
+						[attr.aria-invalid]="
+							registerForm.controls.password.touched && registerForm.controls.password.invalid
+						"
+						[attr.aria-describedby]="
+							registerForm.controls.password.touched && registerForm.controls.password.invalid
+								? 'register-password-error'
+								: null
+						"
+					/>
+					@if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
+						<span class="field-error" id="register-password-error" role="alert">
+							@if (registerForm.controls.password.errors?.['required']) {
+								Password is required.
+							} @else if (registerForm.controls.password.errors?.['minlength']) {
+								Password must be at least 6 characters.
+							}
+						</span>
+					}
+				</div>
+				<button type="submit" class="btn-primary btn-full" [disabled]="loading()">
+					@if (loading()) {
+						Registering…
+					} @else {
+						Register
+					}
+				</button>
+			</form>
+		}
+	</div>
+</dialog>
