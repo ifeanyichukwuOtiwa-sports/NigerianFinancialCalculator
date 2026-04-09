@@ -1,42 +1,142 @@
 # Nigerian Financial Calculator
 
-A full-stack financial calculator for Nigerian users. The repository contains an Angular frontend, a Spring Boot backend, and local infrastructure for MySQL and Redis.
+Full-stack financial planning application built for Nigerian users with an Angular frontend, a Spring Boot backend, and local MySQL and Redis infrastructure.
 
-## What It Does
+This project is more than a calculator UI. It is a stateful web application with authentication, scenario persistence, tax-rule execution, export workflows, and environment-aware backend design.
+
+## Why This Project Is Worth Reviewing
+
+- It combines product-facing financial workflows with backend concerns such as session management, data persistence, rate limiting, and export generation.
+- The backend is organized by feature instead of by technical layer, which keeps auth, scenarios, tax logic, and export concerns cohesive.
+- The application uses Redis-backed server-side sessions rather than pushing auth state into the client.
+- Integration tests cover the main user flow from authentication through scenario creation and export.
+
+## Core Capabilities
 
 - Compound-interest projections with recurring contributions
-- Personal income tax estimation using the app's 2026 Nigeria tax-band configuration
+- Personal income tax estimation using the application's 2026 Nigerian tax-band configuration
 - Session-based authentication
-- Saved scenarios with PDF and CSV export
+- Saved financial scenarios
+- PDF and CSV export
 - Side-by-side scenario comparison
 
-Tax calculations in this project are application rules, not legal advice. If the tax policy changes, update the configured bands and supporting docs together.
+Tax calculations in this project are application rules, not legal advice. If tax policy changes, the configured bands and supporting documentation should be updated together.
 
-## Stack
+## Architecture Overview
+
+```text
+Angular frontend
+  -> calls /api endpoints through a local proxy
+  -> sends brand context for scoped access
+
+Spring Boot backend
+  -> handles auth, scenarios, tax calculation, and export workflows
+  -> stores HTTP session state in Redis
+  -> persists users and scenarios in MySQL
+  -> manages schema changes with Liquibase
+
+Exports
+  -> PDF generation for printable scenario summaries
+  -> CSV generation for portable data analysis
+```
+
+## Technical Highlights
 
 ### Frontend
+
 - Angular 21
 - Signals and standalone components
-- Angular Router with lazy-loaded pages
-- Chart.js
+- Lazy-loaded routes
+- Chart.js visualizations
 - ESLint with Angular template accessibility rules
 
 ### Backend
+
 - Spring Boot 4.0.5
-- Java 25 toolchain
+- Java 25
 - Spring Security with server-side sessions
 - Redis-backed session storage
-- MySQL 8.4 with Liquibase migrations
+- MySQL 8.4
+- Liquibase migrations
 - JUnit 5 and Testcontainers
 
-### Local Infrastructure
-- Docker Compose
-- Spring Boot Buildpacks for the backend container image
+### Operational Concerns
 
-## Repository Docs
+- Docker Compose for local infrastructure
+- Spring Boot Buildpacks for container image creation
+- Actuator health endpoints
+- Graceful shutdown support
+- Auth endpoint rate limiting
 
-- [`frontEnd/README.md`](./frontEnd/README.md): frontend setup and architecture
-- [`backEnd/README.md`](./backEnd/README.md): backend setup, runtime model, API surface, and feature-first package layout
+## Backend Design
+
+The backend uses a feature-first package layout under `backEnd/src/main/java/iwo/wintech/ngnfincalc/`:
+
+- `auth/`: registration, login, session restoration, and auth security
+- `scenarios/`: scenario APIs, storage, and calculation flow
+- `tax/`: tax-band configuration and PIT calculation logic
+- `export/`: PDF and CSV generation
+- `platform/`: security, tenancy, and runtime infrastructure
+- `shared/`: common error handling and logging
+
+That layout keeps API, service, DTO, and persistence code close to the business capability it belongs to.
+
+## Security Model
+
+- Authentication is session-based, not token-spread across the client.
+- Session state is stored in Redis through Spring Session.
+- Requests are scoped with brand context via `X-App-Brand`.
+- Sensitive backend routes require authentication.
+- Auth endpoints are rate limited.
+
+Key auth endpoints:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `POST /api/auth/logout`
+
+## Main Application Flows
+
+### Scenario Management
+
+- Create a scenario
+- Recalculate growth and tax outputs
+- Persist the scenario for the authenticated user
+- List or delete saved scenarios
+
+### Export Flow
+
+- Load a saved scenario
+- Build export payload from stored domain data
+- Render a PDF or CSV response
+
+## Testing
+
+The backend includes both focused and flow-oriented tests.
+
+- `TaxServiceTest` verifies tax calculation behavior
+- `UserFlowIntegrationTest` exercises registration, login, session restoration, scenario creation, export, deletion, logout, and auth rate limiting
+- Testcontainers provides MySQL and Redis during integration testing
+
+Run backend tests:
+
+```bash
+cd backEnd
+./gradlew test
+```
+
+Generate backend coverage:
+
+```bash
+cd backEnd
+./gradlew jacocoTestReport
+```
+
+## Repository Layout
+
+- [`backEnd/README.md`](./backEnd/README.md): backend architecture, runtime model, API surface, and feature-first package layout
+- [`frontEnd/README.md`](./frontEnd/README.md): frontend setup and application structure
 - [`doc/learning_guides.md`](./doc/learning_guides.md): implementation notes and project decisions
 
 ## Quick Start
@@ -47,20 +147,23 @@ Tax calculations in this project are application rules, not legal advice. If the
 - Node.js 24 LTS
 - Java 25+
 
-### Local Development With Host-Run App
+### Local Development
 
-1. Start infrastructure only:
+1. Start infrastructure:
+
 ```bash
 docker compose up -d
 ```
 
 2. Start the backend:
+
 ```bash
 cd backEnd
 ./gradlew bootRun
 ```
 
 3. Start the frontend:
+
 ```bash
 cd frontEnd
 npm install
@@ -85,42 +188,13 @@ cd backEnd
 ./gradlew bootBuildImage
 ```
 
-Then start the app profile:
+Then start the application profile:
 
 ```bash
 docker compose --profile app up --build
 ```
 
 `docker compose up -d` starts only MySQL and Redis. `--profile app` adds the backend and frontend containers.
-
-## Development
-
-### Backend tests
-```bash
-cd backEnd
-./gradlew test
-```
-
-### Backend coverage
-```bash
-cd backEnd
-./gradlew jacocoTestReport
-```
-
-Coverage report:
-`backEnd/build/reports/jacoco/test/html/index.html`
-
-### Frontend lint
-```bash
-cd frontEnd
-npm run lint
-```
-
-### Frontend test
-```bash
-cd frontEnd
-npm test
-```
 
 ## Deployment Notes
 
