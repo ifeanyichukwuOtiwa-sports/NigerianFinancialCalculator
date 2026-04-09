@@ -1,1 +1,5 @@
-cd frontEnd && npm run lint
+#!/bin/sh
+if git diff --cached --name-only | grep -q "^frontEnd/"; then
+  echo "Front-end changes detected, running lint..."
+  cd frontEnd && npm run lint
+fi

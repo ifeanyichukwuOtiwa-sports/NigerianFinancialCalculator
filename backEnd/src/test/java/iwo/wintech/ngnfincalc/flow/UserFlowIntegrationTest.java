@@ -1,8 +1,8 @@
 package iwo.wintech.ngnfincalc.flow;
 
+import iwo.wintech.ngnfincalc.TestcontainersConfiguration;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
-import org.testcontainers.utility.TestcontainersConfiguration;
 import tools.jackson.databind.ObjectMapper;
 import iwo.wintech.ngnfincalc.shared.error.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class UserFlowIntegrationTest {
     @Order(1)
     @DisplayName("User Journey: Attempt Unauthorized -> Register -> Duplicate Register Error -> Login -> Auth Failure Error -> Create Scenarios (None, WHT, Progressive) -> List -> Delete -> Logout")
     void fullUserJourney() {
-        String email = "user-" + System.currentTimeMillis() + "@test.com";
+        String email = "user.sample@test.com";
         new UserActionsBuilder(restTemplate, objectMapper)
                 .withBrand("NGN")
                 
@@ -123,7 +123,7 @@ class UserFlowIntegrationTest {
     @Order(2)
     @DisplayName("Security: Verify Rate Limiting for Auth Endpoints")
     void testRateLimiting() {
-        String email = "rate-limit-" + System.currentTimeMillis() + "@test.com";
+        String email = "rate.limit@test.com";
         // Use a different IP for this test to avoid bucket exhaustion from first test
         UserActionsBuilder builder = new UserActionsBuilder(restTemplate, objectMapper)
                 .withBrand("NGN")
