@@ -6,6 +6,8 @@
 /frontEnd/out-tsc
 /frontEnd/bazel-out
 /frontEnd/.angular/cache
+/frontEnd/playwright-report
+/frontEnd/test-results
 node_modules/
 *.log
 npm-debug.log*

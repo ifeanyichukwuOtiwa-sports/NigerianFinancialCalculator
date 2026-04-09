@@ -34,6 +34,7 @@ export class AuthComponent {
 	protected readonly successMessage = signal<string | null>(null);
 
 	protected readonly dialogRef = viewChild<ElementRef<HTMLDialogElement>>('authDialog');
+	protected readonly closeButtonRef = viewChild<ElementRef<HTMLButtonElement>>('closeButton');
 
 	constructor() {
 		const mode = this.navService.authModal();
@@ -46,7 +47,13 @@ export class AuthComponent {
 
 		// After the modal renders, open it as a modal using the native showModal() for accessibility
 		afterNextRender(() => {
-			this.dialogRef()?.nativeElement.showModal();
+			const dialog = this.dialogRef()?.nativeElement;
+			if (!dialog) {
+				return;
+			}
+
+			dialog.showModal();
+			this.closeButtonRef()?.nativeElement.focus();
 		});
 	}
 
@@ -75,6 +82,44 @@ export class AuthComponent {
 	protected onOverlayClick(event: MouseEvent): void {
 		if (event.target === event.currentTarget) {
 			this.close();
+		}
+	}
+
+	protected onDialogKeydown(event: KeyboardEvent): void {
+		if (event.key !== 'Tab') {
+			return;
+		}
+
+		const dialog = this.dialogRef()?.nativeElement;
+		if (!dialog) {
+			return;
+		}
+
+		const focusableElements = Array.from(
+			dialog.querySelectorAll<HTMLElement>(
+				'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+			),
+		).filter((element) => !element.hasAttribute('hidden'));
+
+		if (focusableElements.length === 0) {
+			event.preventDefault();
+			dialog.focus();
+			return;
+		}
+
+		const first = focusableElements[0];
+		const last = focusableElements[focusableElements.length - 1];
+		const activeElement = document.activeElement as HTMLElement | null;
+
+		if (event.shiftKey && (activeElement === first || activeElement === dialog)) {
+			event.preventDefault();
+			last.focus();
+			return;
+		}
+
+		if (!event.shiftKey && (activeElement === last || activeElement === dialog)) {
+			event.preventDefault();
+			first.focus();
 		}
 	}
 

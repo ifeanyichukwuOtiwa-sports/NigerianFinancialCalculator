@@ -5,10 +5,19 @@
 	(close)="onDialogClose()"
 	(click)="onOverlayClick($event)"
 	(keydown.escape)="close()"
+	(keydown)="onDialogKeydown($event)"
 	aria-label="Authentication"
 >
 	<div class="auth-card glass-card">
-		<button class="btn-icon-close" (click)="close()" aria-label="Close" type="button">&times;</button>
+		<button
+			#closeButton
+			class="btn-icon-close"
+			(click)="close()"
+			aria-label="Close"
+			type="button"
+		>
+			&times;
+		</button>
 		<h2 class="auth-title gradient-text">Welcome</h2>
 		<div class="tabs toggle-group">
 			<button [class.active]="activeTab() === 'login'" (click)="switchTab('login')" type="button">Login</button>
