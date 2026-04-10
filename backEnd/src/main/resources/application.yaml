@@ -1,8 +1,6 @@
 spring:
   application:
     name: ngn-financial-calculator-backend
-  profiles:
-    default: local
 
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:6033/ngn_calc?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
