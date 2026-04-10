@@ -1,13 +1,24 @@
 <main class="landing">
 	<div class="landing-hero glass-card">
 		<h2 class="landing-title gradient-text">Nigerian Financial Calculator</h2>
-		<p class="landing-subtitle">
-			Plan your financial future with tax-aware compound interest calculations, built for Nigeria's 2026 tax
-			framework.
-		</p>
-		<div class="landing-actions">
-			<button class="btn-primary btn-lg" (click)="openAuth('register')">Get Started</button>
-			<button class="btn-secondary btn-lg" (click)="openAuth('login')">I have an account</button>
-		</div>
+		@if (isLoggedIn()) {
+			<p class="landing-subtitle">
+				Welcome back{{ user()?.fullName ? ', ' + user()?.fullName : '' }}. Continue with your calculators or
+				review saved scenarios.
+			</p>
+			<div class="landing-actions">
+				<a class="btn-primary btn-lg" routerLink="/calculator">Open Calculator</a>
+				<a class="btn-secondary btn-lg" routerLink="/scenarios">View Scenarios</a>
+			</div>
+		} @else {
+			<p class="landing-subtitle">
+				Plan your financial future with tax-aware compound interest calculations, built for Nigeria's 2026 tax
+				framework.
+			</p>
+			<div class="landing-actions">
+				<button class="btn-primary btn-lg" (click)="openAuth('register')">Get Started</button>
+				<button class="btn-secondary btn-lg" (click)="openAuth('login')">I have an account</button>
+			</div>
+		}
 	</div>
 </main>
