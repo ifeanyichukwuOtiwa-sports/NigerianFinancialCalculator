@@ -1,6 +1,8 @@
 package iwo.wintech.ngnfincalc.scenarios.repository;
 
 import iwo.wintech.ngnfincalc.scenarios.model.InvestmentScenario;
+import iwo.wintech.ngnfincalc.shared.error.ErrorCode;
+import iwo.wintech.ngnfincalc.shared.error.RequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -9,7 +11,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -18,6 +24,7 @@ import java.util.Optional;
 public class InvestmentScenarioRepository {
 
     private final JdbcClient jdbcClient;
+    private final Clock clock;
 
     private static final RowMapper<InvestmentScenario> SCENARIO_ROW_MAPPER = (rs, rowNum) -> InvestmentScenario.builder()
             .id(rs.getLong("id"))
@@ -34,7 +41,7 @@ public class InvestmentScenarioRepository {
             .totalBalance(rs.getBigDecimal("total_balance"))
             .totalInterest(rs.getBigDecimal("total_interest"))
             .estimatedTax(rs.getBigDecimal("estimated_tax"))
-            .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+            .createdAt(rs.getObject("created_at", LocalDateTime.class))
             .build();
 
     public List<InvestmentScenario> findAllByBrandAndUserId(String brand, Long userId) {
@@ -55,16 +62,18 @@ public class InvestmentScenarioRepository {
 
     public InvestmentScenario save(InvestmentScenario scenario) {
         if (scenario.id() == null) {
+            // Column is MySQL TIMESTAMP(6); set the value so the returned object matches the stored row.
+            final LocalDateTime createdAt = LocalDateTime.now(clock).truncatedTo(ChronoUnit.MICROS);
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcClient.sql("""
                     INSERT INTO investment_scenarios (
                         brand, user_id, name, principal, annual_rate, years, monthly_contribution,
                         compounding_frequency, tax_strategy, annual_income, total_balance,
-                        total_interest, estimated_tax
+                        total_interest, estimated_tax, created_at
                     ) VALUES (
                         :brand, :userId, :name, :principal, :annualRate, :years, :monthlyContribution,
                         :compoundingFrequency, :taxStrategy, :annualIncome, :totalBalance,
-                        :totalInterest, :estimatedTax
+                        :totalInterest, :estimatedTax, :createdAt
                     )
                     """)
                     .param("brand", scenario.brand())
@@ -80,20 +89,21 @@ public class InvestmentScenarioRepository {
                     .param("totalBalance", scenario.totalBalance())
                     .param("totalInterest", scenario.totalInterest())
                     .param("estimatedTax", scenario.estimatedTax())
+                    .param("createdAt", createdAt)
                     .update(keyHolder);
             final Long id = Objects.requireNonNull(keyHolder.getKeyAs(BigInteger.class)).longValueExact();
-            return scenario.toBuilder().id(id).build();
+            return scenario.toBuilder().id(id).createdAt(createdAt).build();
         } else {
-            jdbcClient.sql("""
+            // brand is the tenancy key: immutable (never in SET) and every write is scoped by it (WHERE brand AND id).
+            final int rows = jdbcClient.sql("""
                     UPDATE investment_scenarios SET
-                        brand = :brand, name = :name, principal = :principal, annual_rate = :annualRate,
+                        name = :name, principal = :principal, annual_rate = :annualRate,
                         years = :years, monthly_contribution = :monthlyContribution,
                         compounding_frequency = :compoundingFrequency, tax_strategy = :taxStrategy,
                         annual_income = :annualIncome, total_balance = :totalBalance,
                         total_interest = :totalInterest, estimated_tax = :estimatedTax
-                    WHERE id = :id
+                    WHERE brand = :brand AND id = :id
                     """)
-                    .param("brand", scenario.brand())
                     .param("name", scenario.name())
                     .param("principal", scenario.principal())
                     .param("annualRate", scenario.annualRate())
@@ -105,8 +115,13 @@ public class InvestmentScenarioRepository {
                     .param("totalBalance", scenario.totalBalance())
                     .param("totalInterest", scenario.totalInterest())
                     .param("estimatedTax", scenario.estimatedTax())
+                    .param("brand", scenario.brand())
                     .param("id", scenario.id())
                     .update();
+            if (rows == 0) {
+                throw new RequestException("Scenario not found or access denied", ErrorCode.INVALID_INPUT,
+                        Map.of("scenarioId", scenario.id()));
+            }
             return scenario;
         }
     }

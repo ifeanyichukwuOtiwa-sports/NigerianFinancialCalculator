@@ -33,10 +33,11 @@ public class UserRepository {
             .passwordHash(rs.getString("password_hash"))
             .fullName(rs.getString("full_name"))
             .createdAt(rs.getObject("created_at", LocalDateTime.class))
+            .updatedAt(rs.getObject("updated_at", LocalDateTime.class))
             .build();
 
     public Optional<User> findById(Long id) {
-        return jdbcClient.sql("SELECT id, brand, email, password_hash, full_name, created_at FROM users WHERE id = :id")
+        return jdbcClient.sql("SELECT id, brand, email, password_hash, full_name, created_at, updated_at FROM users WHERE id = :id")
                 .param("id", id)
                 .query(USER_ROW_MAPPER)
                 .optional();
@@ -44,7 +45,7 @@ public class UserRepository {
 
     public Optional<User> findByBrandAndId(final String brand, final Long id) {
         return jdbcClient.sql("""
-                        SELECT id, brand, email, password_hash, full_name, created_at
+                        SELECT id, brand, email, password_hash, full_name, created_at, updated_at
                         FROM users
                         WHERE brand = :brand AND id = :id
                         """)
@@ -55,7 +56,7 @@ public class UserRepository {
     }
 
     public Optional<User> findByBrandAndEmail(String brand, String email) {
-        return jdbcClient.sql("SELECT id, brand, email, password_hash, full_name, created_at FROM users WHERE brand = :brand AND email = :email")
+        return jdbcClient.sql("SELECT id, brand, email, password_hash, full_name, created_at, updated_at FROM users WHERE brand = :brand AND email = :email")
                 .param("brand", brand)
                 .param("email", email)
                 .query(USER_ROW_MAPPER)
@@ -67,32 +68,35 @@ public class UserRepository {
     }
 
     private @NonNull User updateUser(final User user) {
+        final LocalDateTime updatedAt = LocalDateTime.now(clock).truncatedTo(ChronoUnit.MICROS);
         // brand is the tenancy key: immutable (never in SET) and every write is scoped by it (WHERE brand AND id).
-        final int rows = jdbcClient.sql("UPDATE users SET email = :email, password_hash = :passwordHash, full_name = :fullName WHERE brand = :brand AND id = :id")
+        final int rows = jdbcClient.sql("UPDATE users SET email = :email, password_hash = :passwordHash, full_name = :fullName, updated_at = :updatedAt WHERE brand = :brand AND id = :id")
                 .param("email", user.email())
                 .param("passwordHash", user.passwordHash())
                 .param("fullName", user.fullName())
+                .param("updatedAt", updatedAt)
                 .param("brand", user.brand())
                 .param("id", user.id())
                 .update();
         if (rows == 0) {
             throw new RequestException("User not found", ErrorCode.USER_NOT_FOUND, Map.of());
         }
-        return user;
+        return user.toBuilder().updatedAt(updatedAt).build();
     }
 
     private User insertUser(final User user) {
-        // Column is MySQL TIMESTAMP(6) (microsecond precision); truncate to match what the DB stores exactly.
-        final LocalDateTime createdAt = LocalDateTime.now(clock).truncatedTo(ChronoUnit.MICROS);
+        // Columns are MySQL TIMESTAMP(6) (microsecond precision); truncate to match what the DB stores exactly.
+        final LocalDateTime now = LocalDateTime.now(clock).truncatedTo(ChronoUnit.MICROS);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql("INSERT INTO users (brand, email, password_hash, full_name, created_at) VALUES (:brand, :email, :passwordHash, :fullName, :createdAt)")
+        jdbcClient.sql("INSERT INTO users (brand, email, password_hash, full_name, created_at, updated_at) VALUES (:brand, :email, :passwordHash, :fullName, :createdAt, :updatedAt)")
                 .param("brand", user.brand())
                 .param("email", user.email())
                 .param("passwordHash", user.passwordHash())
                 .param("fullName", user.fullName())
-                .param("createdAt", createdAt)
+                .param("createdAt", now)
+                .param("updatedAt", now)
                 .update(keyHolder);
         final Long id = Objects.requireNonNull(keyHolder.getKeyAs(BigInteger.class)).longValueExact();
-        return user.toBuilder().id(id).createdAt(createdAt).build();
+        return user.toBuilder().id(id).createdAt(now).updatedAt(now).build();
     }
 }

@@ -53,9 +53,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiErrorResponse> handleBadCredentials(final BadCredentialsException ex) {
         int status = statusResolver.resolveStatusCode(ex, 401);
-        
+
         return ResponseEntity.status(status).body(
                 ApiErrorResponse.of(ErrorCode.AUTH_FAILED, "Invalid email or password", Map.of()));
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiErrorResponse> handleUnauthorized(final UnauthorizedException ex) {
+        customLogger.logException(ex);
+        int status = statusResolver.resolveStatusCode(ex, 401);
+
+        return ResponseEntity.status(status).body(new ApiErrorResponse(
+                ex.getErrorCode(), ex.getUuid(), ex.getMessage(), ex.getParams()));
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260701-006
+      author: ifeanyichukwu.otiwa
+      comment: Audit column users.updated_at (application-managed via injected Clock)
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE users
+                ADD COLUMN updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6) AFTER created_at;

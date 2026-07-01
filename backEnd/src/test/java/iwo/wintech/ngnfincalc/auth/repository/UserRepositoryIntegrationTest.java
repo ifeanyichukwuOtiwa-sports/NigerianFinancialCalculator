@@ -62,6 +62,25 @@ class UserRepositoryIntegrationTest {
                 .as("save() must return the persisted createdAt, not the null input value")
                 .isNotNull()
                 .isEqualTo(EXPECTED_CREATED_AT);
+        assertThat(saved.updatedAt())
+                .as("updatedAt is set on insert and equals createdAt")
+                .isEqualTo(EXPECTED_CREATED_AT);
+    }
+
+    @Test
+    @DisplayName("toString never leaks the password hash")
+    void toStringMasksPasswordHash() {
+        User user = User.builder()
+                .id(1L)
+                .brand("NGN")
+                .email("mask@test.com")
+                .passwordHash("$2a$10$supersecrethash")
+                .fullName("Mask Me")
+                .build();
+
+        assertThat(user.toString())
+                .doesNotContain("supersecrethash")
+                .contains("passwordHash=***");
     }
 
     @Test

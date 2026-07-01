@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260701-007
+      author: ifeanyichukwu.otiwa
+      comment: Microsecond precision on investment_scenarios.created_at for deterministic ordering
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE investment_scenarios
+                MODIFY COLUMN created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6);

@@ -5,6 +5,7 @@ import iwo.wintech.ngnfincalc.auth.dto.LoginRequest;
 import iwo.wintech.ngnfincalc.auth.dto.RegisterRequest;
 import iwo.wintech.ngnfincalc.auth.security.BrandAuthentication;
 import iwo.wintech.ngnfincalc.auth.service.AuthService;
+import iwo.wintech.ngnfincalc.shared.error.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,8 @@ public class AuthController {
     public ResponseEntity<AuthResponse> me() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || !(auth instanceof BrandAuthentication brandAuth)) {
-            return ResponseEntity.status(401).build();
+            // GlobalExceptionHandler renders the standard ApiErrorResponse body at 401.
+            throw new UnauthorizedException("Authentication required");
         }
         return ResponseEntity.ok(authService.getCurrentUser(brandAuth));
     }

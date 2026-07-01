@@ -3,3 +3,7 @@ databaseChangeLog:
       file: db/changelog/changesets/001-create-users-and-scenarios.yaml
   - include:
       file: db/changelog/changesets/002-users-created-at-precision.yaml
+  - include:
+      file: db/changelog/changesets/003-users-updated-at.yaml
+  - include:
+      file: db/changelog/changesets/004-scenarios-created-at-precision.yaml
