@@ -150,7 +150,7 @@
 						type="password"
 						formControlName="password"
 						autocomplete="new-password"
-						placeholder="At least 6 characters"
+						placeholder="At least 8 characters"
 						[class.input-invalid]="
 							registerForm.controls.password.touched && registerForm.controls.password.invalid
 						"
@@ -168,7 +168,9 @@
 							@if (registerForm.controls.password.errors?.['required']) {
 								Password is required.
 							} @else if (registerForm.controls.password.errors?.['minlength']) {
-								Password must be at least 6 characters.
+								Password must be at least 8 characters.
+							} @else if (registerForm.controls.password.errors?.['maxlength']) {
+								Password must be at most 64 characters.
 							}
 						</span>
 					}

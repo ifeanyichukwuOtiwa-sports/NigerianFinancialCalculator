@@ -65,7 +65,7 @@ export class AuthComponent {
 	protected readonly registerForm = this.fb.nonNullable.group({
 		fullName: ['', [Validators.required]],
 		email: ['', [Validators.required, Validators.email]],
-		password: ['', [Validators.required, Validators.minLength(6)]],
+		password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
 	});
 
 	protected close(): void {
