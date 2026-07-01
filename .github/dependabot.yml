@@ -1,0 +1,50 @@
+version: 2
+updates:
+  # ── Backend: Gradle ──────────────────────────────────────────────
+  - package-ecosystem: "gradle"
+    directory: "/backEnd"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lagos"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "backend", "security"]
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    groups:
+      spring:
+        patterns: ["org.springframework*", "io.spring*"]
+      test:
+        patterns: ["*junit*", "*testcontainers*", "*jsonassert*"]
+
+  # ── Frontend: npm ────────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/frontEnd"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lagos"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "frontend", "security"]
+    versioning-strategy: "increase"
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    groups:
+      angular:
+        patterns: ["@angular/*", "@angular-devkit/*"]
+      build-tooling:
+        patterns: ["esbuild", "vite", "postcss", "@babel/*", "typescript"]
+
+  # ── CI: GitHub Actions ───────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "ci(deps)"
