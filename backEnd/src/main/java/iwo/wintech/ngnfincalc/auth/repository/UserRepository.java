@@ -10,7 +10,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -19,18 +21,16 @@ import java.util.Optional;
 public class UserRepository {
 
     private final JdbcClient jdbcClient;
+    private final Clock clock;
 
-    private static final RowMapper<User> USER_ROW_MAPPER = (rs, rowNum) -> {
-        final Timestamp createdAt = rs.getTimestamp("created_at");
-        return User.builder()
-                .id(rs.getLong("id"))
-                .brand(rs.getString("brand"))
-                .email(rs.getString("email"))
-                .passwordHash(rs.getString("password_hash"))
-                .fullName(rs.getString("full_name"))
-                .createdAt(Optional.ofNullable(createdAt).map(Timestamp::toLocalDateTime).orElse(null))
-                .build();
-    };
+    private static final RowMapper<User> USER_ROW_MAPPER = (rs, rowNum) -> User.builder()
+            .id(rs.getLong("id"))
+            .brand(rs.getString("brand"))
+            .email(rs.getString("email"))
+            .passwordHash(rs.getString("password_hash"))
+            .fullName(rs.getString("full_name"))
+            .createdAt(rs.getObject("created_at", LocalDateTime.class))
+            .build();
 
     public Optional<User> findById(Long id) {
         return jdbcClient.sql("SELECT id, brand, email, password_hash, full_name, created_at FROM users WHERE id = :id")
@@ -75,14 +75,16 @@ public class UserRepository {
     }
 
     private User insertUser(final User user) {
+        final LocalDateTime createdAt = LocalDateTime.now(clock).truncatedTo(ChronoUnit.SECONDS);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql("INSERT INTO users (brand, email, password_hash, full_name) VALUES (:brand, :email, :passwordHash, :fullName)")
+        jdbcClient.sql("INSERT INTO users (brand, email, password_hash, full_name, created_at) VALUES (:brand, :email, :passwordHash, :fullName, :createdAt)")
                 .param("brand", user.brand())
                 .param("email", user.email())
                 .param("passwordHash", user.passwordHash())
                 .param("fullName", user.fullName())
+                .param("createdAt", createdAt)
                 .update(keyHolder);
         final Long id = Objects.requireNonNull(keyHolder.getKeyAs(BigInteger.class)).longValueExact();
-        return user.toBuilder().id(id).build();
+        return user.toBuilder().id(id).createdAt(createdAt).build();
     }
 }
