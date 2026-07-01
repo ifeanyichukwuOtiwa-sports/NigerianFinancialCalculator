@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260701-005
+      author: ifeanyichukwu.otiwa
+      comment: Microsecond precision on users.created_at so same-second signups order deterministically
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE users
+                MODIFY COLUMN created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6);

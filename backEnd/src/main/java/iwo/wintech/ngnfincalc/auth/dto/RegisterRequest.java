@@ -10,7 +10,8 @@ public record RegisterRequest(
     String email,
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    // Cap well under BCrypt's 72-byte limit; bytes past 72 are silently ignored and would not be verified.
+    @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
     String password,
 
     @NotBlank(message = "Full name is required")

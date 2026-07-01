@@ -82,7 +82,8 @@ public class UserRepository {
     }
 
     private User insertUser(final User user) {
-        final LocalDateTime createdAt = LocalDateTime.now(clock).truncatedTo(ChronoUnit.SECONDS);
+        // Column is MySQL TIMESTAMP(6) (microsecond precision); truncate to match what the DB stores exactly.
+        final LocalDateTime createdAt = LocalDateTime.now(clock).truncatedTo(ChronoUnit.MICROS);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcClient.sql("INSERT INTO users (brand, email, password_hash, full_name, created_at) VALUES (:brand, :email, :passwordHash, :fullName, :createdAt)")
                 .param("brand", user.brand())

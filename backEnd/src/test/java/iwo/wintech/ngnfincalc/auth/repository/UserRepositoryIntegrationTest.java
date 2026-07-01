@@ -30,7 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class UserRepositoryIntegrationTest {
 
     // Fixed instant so createdAt is deterministic — no system clock in the assertion.
-    private static final Instant FIXED_INSTANT = Instant.parse("2026-01-02T03:04:05Z");
+    // Sub-second component proves TIMESTAMP(6) microsecond precision survives the round-trip.
+    private static final Instant FIXED_INSTANT = Instant.parse("2026-01-02T03:04:05.123456Z");
     private static final LocalDateTime EXPECTED_CREATED_AT =
             LocalDateTime.ofInstant(FIXED_INSTANT, ZoneOffset.UTC);
 
@@ -80,6 +81,9 @@ class UserRepositoryIntegrationTest {
                 .as("createdAt read back from DB must match the value save() returned")
                 .isEqualTo(saved.createdAt())
                 .isEqualTo(EXPECTED_CREATED_AT);
+        assertThat(reloaded.get().createdAt().getNano())
+                .as("sub-second precision must survive the TIMESTAMP(6) round-trip")
+                .isEqualTo(123_456_000);
     }
 
     @Test
