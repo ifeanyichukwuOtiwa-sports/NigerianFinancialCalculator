@@ -3,6 +3,7 @@ package iwo.wintech.ngnfincalc.shared.error;
 public enum ErrorCode {
     // Auth Errors
     EMAIL_EXISTS,
+    REGISTRATION_FAILED,
     USER_NOT_FOUND,
     USER_SYNC_ERROR,
     UNAUTHORIZED,

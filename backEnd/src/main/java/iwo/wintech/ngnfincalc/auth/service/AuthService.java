@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         String brand = BrandContext.get();
 
-        if (userRepository.findByBrandAndEmail(brand, request.email()).isPresent()) {
-            throw new RequestException("Email already exists for this brand", ErrorCode.EMAIL_EXISTS,
-                Map.of("email", request.email(), "brand", brand));
-        }
-
+        // Always hash before touching the DB so response timing does not reveal whether the email exists.
         User user = User.builder()
                 .brand(brand)
                 .email(request.email())
@@ -45,8 +42,14 @@ public class AuthService {
                 .fullName(request.fullName())
                 .build();
 
-        User savedUser = userRepository.save(user);
-        return mapToResponse(savedUser);
+        try {
+            // Rely on the UNIQUE(brand, email) constraint as the single source of truth (no check-then-insert race).
+            User savedUser = userRepository.save(user);
+            return mapToResponse(savedUser);
+        } catch (DuplicateKeyException e) {
+            // Generic, label-free failure — do not disclose that the email is already registered (anti-enumeration).
+            throw new RequestException("Unable to complete registration", ErrorCode.REGISTRATION_FAILED, Map.of());
+        }
     }
 
     public AuthResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {

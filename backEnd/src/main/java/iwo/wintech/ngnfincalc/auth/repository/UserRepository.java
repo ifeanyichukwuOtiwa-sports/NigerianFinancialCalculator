@@ -1,6 +1,8 @@
 package iwo.wintech.ngnfincalc.auth.repository;
 
 import iwo.wintech.ngnfincalc.auth.model.User;
+import iwo.wintech.ngnfincalc.shared.error.ErrorCode;
+import iwo.wintech.ngnfincalc.shared.error.RequestException;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +15,7 @@ import java.math.BigInteger;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -64,13 +67,17 @@ public class UserRepository {
     }
 
     private @NonNull User updateUser(final User user) {
-        jdbcClient.sql("UPDATE users SET brand = :brand, email = :email, password_hash = :passwordHash, full_name = :fullName WHERE id = :id")
-                .param("brand", user.brand())
+        // brand is the tenancy key: immutable (never in SET) and every write is scoped by it (WHERE brand AND id).
+        final int rows = jdbcClient.sql("UPDATE users SET email = :email, password_hash = :passwordHash, full_name = :fullName WHERE brand = :brand AND id = :id")
                 .param("email", user.email())
                 .param("passwordHash", user.passwordHash())
                 .param("fullName", user.fullName())
+                .param("brand", user.brand())
                 .param("id", user.id())
                 .update();
+        if (rows == 0) {
+            throw new RequestException("User not found", ErrorCode.USER_NOT_FOUND, Map.of());
+        }
         return user;
     }
 

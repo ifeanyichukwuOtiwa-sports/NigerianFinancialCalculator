@@ -51,10 +51,10 @@ class UserFlowIntegrationTest {
                 .expectStatus(200)
                 .expectJson("{email: '" + email + "', fullName: 'Test User'}")
                 
-                .step("4. Attempt to register again with same email (should fail with 400 Bad Request)")
+                .step("4. Attempt to register again with same email (generic failure, no enumeration leak)")
                 .register(email, "secret123", "Test User")
                 .expectStatus(400)
-                .expectJson("{code: '" + ErrorCode.EMAIL_EXISTS.name() + "'}")
+                .expectJson("{code: '" + ErrorCode.REGISTRATION_FAILED.name() + "'}")
                 
                 .step("5. Login with registered user")
                 .login(email, "secret123")
