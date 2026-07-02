@@ -13,6 +13,11 @@ updates:
     commit-message:
       prefix: "build(deps)"
       include: "scope"
+    # Stay on stable/LTS majors: only auto-bump minor + patch. Major upgrades
+    # (e.g. Spring Boot 5) are done deliberately, not via Dependabot.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       # Single grouped PR for all backend dependency updates.
       backend:
@@ -36,6 +41,11 @@ updates:
     commit-message:
       prefix: "build(deps)"
       include: "scope"
+    # Stay on stable/LTS majors: only auto-bump minor + patch. Major upgrades
+    # (Angular, ESLint, TypeScript) are done deliberately via `ng update`.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       # Single grouped PR for all frontend dependency updates.
       frontend:
