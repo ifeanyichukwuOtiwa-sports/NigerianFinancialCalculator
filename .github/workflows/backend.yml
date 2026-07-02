@@ -11,8 +11,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history for accurate SonarCloud blame/new-code
 
       - uses: actions/setup-java@v4
         with:
@@ -29,6 +33,13 @@ jobs:
       - name: Generate JaCoCo report
         working-directory: backEnd
         run: ./gradlew jacocoTestReport
+
+      - name: SonarCloud scan
+        if: ${{ env.SONAR_TOKEN != '' }}   # skips on forks/PRs without the secret
+        working-directory: backEnd
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # PR decoration
+        run: ./gradlew sonar --info
 
       - name: Build JAR
         working-directory: backEnd

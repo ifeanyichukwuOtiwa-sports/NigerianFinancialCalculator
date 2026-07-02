@@ -1,0 +1,14 @@
+title = "gitleaks config"
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Local-only non-secret defaults"
+regexes = [
+  '''DB_PASSWORD:123456''',      # local default in application.yaml only
+  '''password: 123456''',
+]
+paths = [
+  '''frontEnd/package-lock.json''',
+  '''.*\.min\.js''',
+]
