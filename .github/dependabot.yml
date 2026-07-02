@@ -14,10 +14,13 @@ updates:
       prefix: "build(deps)"
       include: "scope"
     groups:
-      spring:
-        patterns: ["org.springframework*", "io.spring*"]
-      test:
-        patterns: ["*junit*", "*testcontainers*", "*jsonassert*"]
+      # Single grouped PR for all backend dependency updates.
+      backend:
+        applies-to: version-updates
+        patterns: ["*"]
+      backend-security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # ── Frontend: npm ────────────────────────────────────────────────
   - package-ecosystem: "npm"
@@ -34,10 +37,13 @@ updates:
       prefix: "build(deps)"
       include: "scope"
     groups:
-      angular:
-        patterns: ["@angular/*", "@angular-devkit/*"]
-      build-tooling:
-        patterns: ["esbuild", "vite", "postcss", "@babel/*", "typescript"]
+      # Single grouped PR for all frontend dependency updates.
+      frontend:
+        applies-to: version-updates
+        patterns: ["*"]
+      frontend-security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # ── CI: GitHub Actions ───────────────────────────────────────────
   - package-ecosystem: "github-actions"

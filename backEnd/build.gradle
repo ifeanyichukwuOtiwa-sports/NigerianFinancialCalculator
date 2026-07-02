@@ -1,9 +1,9 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.5'
-    id 'io.spring.dependency-management' version '1.1.7'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
     id 'jacoco'
-    id 'org.sonarqube' version '6.0.1.5171'
+    alias(libs.plugins.sonarqube)
 }
 
 group = 'iwo.wintech'
@@ -21,38 +21,38 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.session:spring-session-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-restclient'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.itextpdf:itextpdf:5.5.13.5'
-    implementation 'com.bucket4j:bucket4j-core:8.10.1'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-test-autoconfigure'
-    testImplementation 'org.springframework.boot:spring-boot-webmvc-test'
-    testImplementation 'org.springframework.boot:spring-boot-resttestclient'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
-    testImplementation 'org.testcontainers:testcontainers-mysql'
-    testImplementation 'org.skyscreamer:jsonassert:1.5.3'
-    testCompileOnly 'org.projectlombok:lombok'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testAnnotationProcessor 'org.projectlombok:lombok'
+    implementation libs.spring.boot.starter.data.redis
+    implementation libs.spring.session.data.redis
+    implementation libs.spring.boot.starter.jdbc
+    implementation libs.spring.boot.autoconfigure
+    implementation libs.spring.boot.starter.security
+    implementation libs.spring.boot.starter.liquibase
+    implementation libs.spring.boot.starter.web
+    implementation libs.spring.boot.starter.actuator
+    implementation libs.spring.boot.starter.restclient
+    implementation libs.jackson.databind
+    implementation libs.spring.boot.starter.validation
+    implementation libs.itextpdf
+    implementation libs.bucket4j.core
+    compileOnly libs.lombok
+    runtimeOnly libs.mysql.connector.j
+    annotationProcessor libs.lombok
+    testImplementation libs.spring.boot.starter.test
+    testImplementation libs.spring.boot.test.autoconfigure
+    testImplementation libs.spring.boot.webmvc.test
+    testImplementation libs.spring.boot.resttestclient
+    testImplementation libs.spring.boot.testcontainers
+    testImplementation libs.testcontainers.junit.jupiter
+    testImplementation libs.testcontainers.mysql
+    testImplementation libs.jsonassert
+    testCompileOnly libs.lombok
+    testRuntimeOnly libs.junit.platform.launcher
+    testAnnotationProcessor libs.lombok
 }
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
     dependencies {
-        runtimeOnly 'io.netty:netty-resolver-dns-native-macos'
+        runtimeOnly libs.netty.resolver.dns.native.macos
     }
 }
 

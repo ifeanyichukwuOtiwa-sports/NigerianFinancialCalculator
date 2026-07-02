@@ -1,0 +1,45 @@
+[versions]
+springBoot = "4.0.5"
+springDependencyManagement = "1.1.7"
+sonarqube = "6.0.1.5171"
+# Libraries not managed by the Spring Boot BOM (need explicit versions):
+itextpdf = "5.5.13.5"
+bucket4j = "8.10.1"
+jsonassert = "1.5.3"
+
+[libraries]
+# --- BOM-managed (version resolved by io.spring.dependency-management) ---
+spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
+spring-session-data-redis = { module = "org.springframework.session:spring-session-data-redis" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+spring-boot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
+lombok = { module = "org.projectlombok:lombok" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j" }
+netty-resolver-dns-native-macos = { module = "io.netty:netty-resolver-dns-native-macos" }
+
+# --- Explicitly versioned ---
+itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
+bucket4j-core = { module = "com.bucket4j:bucket4j-core", version.ref = "bucket4j" }
+jsonassert = { module = "org.skyscreamer:jsonassert", version.ref = "jsonassert" }
+
+# --- Test (BOM-managed) ---
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-test-autoconfigure = { module = "org.springframework.boot:spring-boot-test-autoconfigure" }
+spring-boot-webmvc-test = { module = "org.springframework.boot:spring-boot-webmvc-test" }
+spring-boot-resttestclient = { module = "org.springframework.boot:spring-boot-resttestclient" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-mysql = { module = "org.testcontainers:testcontainers-mysql" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
