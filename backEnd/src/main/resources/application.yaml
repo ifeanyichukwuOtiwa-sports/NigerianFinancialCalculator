@@ -10,8 +10,15 @@ spring:
 
   data:
     redis:
+      # Prefer a full REDIS_URL (redis://:password@host:port) when provided (e.g. Railway);
+      # otherwise fall back to discrete host/port/password.
+      url: ${REDIS_URL:}
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      # Fail fast instead of hanging a request when Redis is unreachable.
+      timeout: ${REDIS_TIMEOUT:3s}
+      connect-timeout: ${REDIS_CONNECT_TIMEOUT:3s}
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
