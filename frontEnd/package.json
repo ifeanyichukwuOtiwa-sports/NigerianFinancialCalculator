@@ -38,7 +38,7 @@
 		"@angular/build": "^21.2.6",
 		"@angular/cli": "^21.2.6",
 		"@angular/compiler-cli": "^21.2.0",
-		"@playwright/test": "^1.59.1",
+		"@playwright/test": "^1.61.1",
 		"@types/node": "^20.17.19",
 		"@typescript-eslint/eslint-plugin": "^8.62.1",
 		"@typescript-eslint/parser": "^8.62.1",
