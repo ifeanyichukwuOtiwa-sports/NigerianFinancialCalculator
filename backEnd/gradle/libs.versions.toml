@@ -1,9 +1,9 @@
 [versions]
-springBoot = "4.1.0"
+springBoot = "4.1.1"
 springDependencyManagement = "1.1.7"
 sonarqube = "6.3.1.5724"
 # Libraries not managed by the Spring Boot BOM (need explicit versions):
-itextpdf = "5.5.13.5"
+itextpdf = "5.5.13.6"
 bucket4j = "8.10.1"
 jsonassert = "1.5.3"
 
